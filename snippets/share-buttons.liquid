@@ -1,0 +1,52 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+SHARE BUTTONS
+----------------------------------------------------------------------------------------------------------------------
+
+Generate share buttons for Twitter, Facebook, Pinterest and email
+
+********************************************
+Supported variables
+********************************************
+
+* url: the URL to share
+* title: the title of the resource being shared (can be for instance a product or blog post title)
+* description: the description of the content to share for Pinterest. It is truncated automatically to 200 characters
+* layout: either support "list" or "block" (default to list)
+{%- endcomment -%}
+
+{%- assign url = request.origin | append: url -%}
+
+<ul class="social-media social-media--{{ layout | default: 'list' }} unstyled-list" role="list">
+  <li class="social-media__item branding-colors--facebook">
+    {%- capture share_url -%}https://www.facebook.com/sharer.php?u={{ url }}{%- endcapture -%}
+
+    <a href="{{ share_url }}" aria-label="{{ 'general.social.share_on' | t: social_media: 'Facebook' }}">
+      {%- render 'icon' with 'facebook' -%}
+    </a>
+  </li>
+
+  <li class="social-media__item branding-colors--twitter">
+    {%- capture share_url -%}https://twitter.com/intent/tweet?{% if title != blank %}text={{ title | url_param_escape }}&{% endif %}url={{ url }}{%- endcapture -%}
+
+    <a href="{{ share_url }}" aria-label="{{ 'general.social.share_on' | t: social_media: 'Twitter' }}">
+      {%- render 'icon' with 'twitter' -%}
+    </a>
+  </li>
+
+  <li class="social-media__item branding-colors--pinterest">
+    {%- capture share_url -%}https://pinterest.com/pin/create/button/?url={{ url }}{% if page_image != blank %}&media={{ page_image | image_url: width: 800 | prepend: 'https:' }}{% endif %}&description={{ description | strip_html | truncate: 200 | url_param_escape }}{%- endcapture -%}
+
+    <a href="{{ share_url }}" aria-label="{{ 'general.social.share_on' | t: social_media: 'Pinterest' }}">
+      {%- render 'icon' with 'pinterest' -%}
+    </a>
+  </li>
+
+  <li class="social-media__item branding-colors--email">
+    {%- capture share_url -%}mailto:?&subject={{ title | escape }}&body={{ url }}{%- endcapture -%}
+
+    <a href="{{ share_url }}" aria-label="{{ 'general.social.share_email' | t }}">
+      {%- render 'icon' with 'email' -%}
+    </a>
+  </li>
+</ul>

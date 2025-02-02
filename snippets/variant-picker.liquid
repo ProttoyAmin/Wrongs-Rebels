@@ -1,0 +1,246 @@
+{% comment %} Custom CSS Jahid {% endcomment %}
+
+<style>
+  .h-stack {
+    color: #000;
+    font-family: Inter;
+    font-size: 1rem; /* Use relative units for responsiveness */
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.65; /* Adjusted for better readability */
+    letter-spacing: -0.5px;
+    text-align: center; /* Center align the text */
+    text-transform: capitalize;
+
+  }
+
+  .link {
+    margin: 10px;
+    color: #2f2f2f;
+    font-family: Inter;
+    font-size: 0.7rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 166.667% */
+    letter-spacing: -0.5px;
+    text-transform: capitalize;
+    text-align: center; /* Align text to center */
+    display: block; /* Ensure each link is on its own line */
+  }
+
+
+  @media (max-width: 480px) {
+    .h-stack {
+      font-size: 0.9rem; /* Even smaller for mobile devices */
+      line-height: 1.4; /* Adjust line-height */
+    }
+
+    .link {
+      font-size: 0.70rem; /* Smaller font for links */
+      line-height: 1.4;
+    }
+  }
+
+  
+</style>
+
+{% comment %} Custom CSS Finsish {% endcomment %}
+
+
+
+
+
+
+
+
+
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+VARIANT PICKER
+----------------------------------------------------------------------------------------------------------------------
+
+Render the variant picker option selectors.
+
+********************************************
+Supported variables
+********************************************
+
+* product: the product for which to render the selector (required)
+* form_id: the ID of the form to which the variant picker belongs (required)
+* context: the context of the variant picker. Can be "main_product", "featured_product" or "quick_buy" (required)
+* hide_sold_out_variants: if set to true, the sold out or unavailable variants are hidden
+* selector_style: the selector style to use for the main selectors
+* swatch_selector_style: the selector style to use for the dedicated swatch selectors
+* variant_image_options: a list of option names for which to use the variant image selector mode
+* size_chart_page: the page to use for the size chart
+{%- endcomment -%}
+
+{%- liquid
+  assign color_label_list = 'general.label.color' | t | replace: ', ', ',' | downcase | split: ','
+  assign size_label_list = 'general.label.size' | t | replace: ', ', ',' | downcase | split: ','
+  assign variant_image_options = variant_image_options | replace: ', ', ',' | downcase | split: ','
+
+  if context == 'main_product'
+    assign is_main_product = true
+  endif
+-%}
+
+{%- unless product.has_only_default_variant -%}
+  <variant-picker class="variant-picker v-stack gap-4" section-id="{{ section.id }}" form-id="{{ form_id }}" context="{{ context }}" handle="{{ product.handle }}" {% if context == 'main_product' %}update-url{% endif %}>
+    {%- comment -%}
+    The variant data is outputted as a JSON, which allows the theme to emit an event with the data when the variant changes. This must not be removed.
+    {%- endcomment -%}
+    <script data-variant type="application/json">
+      {{- product.selected_or_first_available_variant | json -}}
+    </script>
+
+    {%- for option in product.options_with_values -%}
+      {% liquid
+        assign option_downcase = option.name | downcase
+        assign resolved_option_selector_style = selector_style
+
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+
+        if swatch_count > 0 and swatch_selector_style != 'none'
+          # Use the swatch selector type only if we have at least one swatch and a supported swatch selector type
+          assign resolved_option_selector_style = swatch_selector_style
+        endif
+
+        # Implementation note: if the option value has no native swatch, BUT that the option name matches a hardcoded list of color names,
+        # we fallback to the legacy config-based system. This allows to keep compatibility with stores that were using the config-based, and
+        # allow those merchants to upgrade to the new system at their own pace.
+        if swatch_count == 0 and color_label_list contains option_downcase and swatch_selector_style != 'none'
+          assign resolved_option_selector_style = swatch_selector_style
+        endif
+
+        if variant_image_options contains option_downcase
+          assign resolved_option_selector_style = 'variant_image'
+        endif
+      %}
+
+{% if option.name == 'Size' %}
+        {% assign variant_class = 'size_variant_div' %}
+        {% else %}
+        {% assign variant_class = '' %}
+        {% endif %}
+      
+      <fieldset class="variant-picker__option v-stack gap0 {{variant_class}}">
+        <div class="variant-picker__option-info h-stack justify-between gap-2">
+          <div class="h-stack gap-1">
+            <legend>Select {{ option.name }}:</legend>
+            {% if option.name == 'Color' %}
+                <sup>{{ option.values.size }}</sup>
+              {% endif %}
+
+            {%- if resolved_option_selector_style == 'swatch' or resolved_option_selector_style == 'variant_image' -%}
+              <span>{{ option.selected_value }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- if size_chart_page != blank and size_label_list contains option_downcase -%}
+            {%- capture id -%}size-chart-{{ option.position }}-{{ form_id }}{%- endcapture -%}
+
+            <button type="button" class="link" aria-controls="{{ id | escape }}" aria-expanded="false">
+              {{- 'product.general.size_chart' | t -}}
+            </button>
+
+            <x-modal id="{{ id | escape }}" class="modal modal--lg color-scheme color-scheme--dialog">
+              <span class="h5" slot="header">{{ size_chart_page.title }}</span>
+
+              <div class="prose">
+                {{- size_chart_page.content -}}
+              </div>
+            </x-modal>
+          {%- endif -%}
+        </div>
+
+        {%- assign name = 'option' | append: option.position -%}
+
+        {%- if resolved_option_selector_style == 'dropdown' -%}
+          <div class="relative">
+            {%- capture popover_id -%}popover-variant-dropdown-{{ section.id }}-{{ product.id }}-{{ option.position }}{%- endcapture -%}
+
+            <button type="button" class="select" aria-controls="{{ popover_id }}" aria-expanded="false">
+              <span id="{{ popover_id }}-selected-value">{{- option.selected_value -}}</span>
+              {%- render 'icon' with 'dropdown-chevron' -%}
+            </button>
+
+            <x-popover id="{{ popover_id }}" class="popover popover--bottom-start color-scheme color-scheme--dialog" close-on-listbox-change>
+              <p class="h5" slot="header">{{ option.name }}</p>
+
+              <div class="popover__value-list">
+                {%- assign param_name = form_id | append: '-option' | append: option.position -%}
+
+                {%- for option_value in option.values -%}
+                  {%- capture option_markup -%}
+                    <span>{{- option_value -}}</span>
+
+                    {%- if option_value.available == false -%}
+                      <span>
+                        {%- if option_value.variant == nil -%}
+                          {{- 'product.general.unavailable_button' | t -}}
+                        {%- else -%}
+                          {{- 'product.general.sold_out_badge' | t -}}
+                        {%- endif -%}
+                      </span>
+                    {%- endif -%}
+                  {%- endcapture -%}
+
+                  {%- if hide_sold_out_variants == false or option_value.available or option_value.selected -%}
+                    {%- if is_main_product and option_value.product_url != blank -%}
+                      <div class="popover__value-option">
+                        {%- if option_value.selected -%}
+                          <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" data-option-position="{{ option.position }}" value="{{ option_value.id }}" checked>
+                        {%- endif -%}
+
+                        <a href="{{ option_value.variant.url | default: option_value.product_url }}" class="h-stack justify-between gap-2">
+                          {{- option_markup -}}
+                        </a>
+                      </div>
+                    {%- else -%}
+                      <label class="popover__value-option h-stack justify-between gap-2" for="{{ param_name }}-{{ option_value.id }}">
+                        <input class="sr-only" form="{{ form_id }}" type="radio" id="{{ param_name }}-{{ option_value.id }}" name="{{ param_name }}" {% if option_value.product_url != blank %}data-product-url="{{ option_value.product_url | escape }}"{% endif %} data-option-position="{{ option.position }}" value="{{ option_value.id }}" {% if option_value.selected %}checked{% endif %}>
+                        {{- option_markup -}}
+                      </label>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </x-popover>
+          </div>
+        {%- else -%}
+          {%- liquid
+            case resolved_option_selector_style
+              when 'swatch' or 'variant_image' or 'block' or 'block_swatch'
+                assign list_classes = 'h-stack gap-2.5 wrap'
+
+              else
+                assign list_classes = ''
+            endcase
+          -%}
+
+          <div class="variant-picker__option-values {{ list_classes }}">
+            {% liquid
+              assign name = form_id | append: '-option' | append: option.position
+
+              for option_value in option.values
+                case resolved_option_selector_style
+                  when 'variant_image'
+                    render 'option-value', type: 'thumbnail', form: form_id, option_value: option_value, param_name: name, option_position: option.position, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                  when 'swatch'
+                    render 'option-value', type: 'swatch', form: form_id, option_value: option_value, param_name: name, option_position: option.position, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                  when 'block'
+                    render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                  when 'block_swatch'
+                    render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, show_swatch: true, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                endcase
+              endfor
+            %}
+          </div>
+        {%- endif -%}
+      </fieldset>
+    {%- endfor -%}
+
+    
+  </variant-picker>
+{%- endunless -%}

@@ -1,0 +1,162 @@
+{%- if section.blocks.size > 0 -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      --logo-list-items-per-row: {{ 2 | at_most: section.blocks.size }};
+      --logo-list-item-border-color: {{ section.settings.logo_item_border.rgb }};
+      --logo-list-gap: {% if section.settings.logo_item_border == blank or section.settings.logo_item_border == 'rgba(0,0,0,0)' %}0px{% else %}1px{% endif %};
+    }
+
+    @media screen and (min-width: 700px) {
+      #shopify-section-{{ section.id }} {
+        --logo-list-items-per-row: {{ 3 | at_most: section.blocks.size }};
+      }
+    }
+
+    @media screen and (min-width: 1000px) {
+      #shopify-section-{{ section.id }} {
+        --logo-list-items-per-row: {{ section.settings.items_per_row | at_most: section.blocks.size }};
+      }
+    }
+  </style>
+
+  {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+  <div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+    <div class="container container--xl">
+      <div class="section-stack">
+        {%- render 'section-header', subheading: section.settings.subheading, heading: section.settings.title, text_alignment: 'center' -%}
+
+        <div class="logo-list">
+          {%- for block in section.blocks -%}
+            {%- capture block_content -%}
+              {%- if block.settings.logo != blank -%}
+                {%- capture sizes -%}{{ block.settings.logo_width }}px{%- endcapture -%}
+                {%- capture widths -%}{{ block.settings.logo_width }}, {{ block.settings.logo_width | times: 2 | at_most: block.settings.logo.width }}{%- endcapture -%}
+                {%- capture max_width -%}--image-max-width: {{ block.settings.logo_width }}px{%- endcapture -%}
+                {{- block.settings.logo | image_url: width: block.settings.logo.width | image_tag: style: max_width, widths: widths, sizes: sizes, class: 'constrained-image' -}}
+              {%- else -%}
+                {{- 'image' | placeholder_svg_tag: 'image placeholder' -}}
+              {%- endif -%}
+            {%- endcapture -%}
+
+            {%- if block.settings.link != blank -%}
+              <a class="logo-list__item" href="{{ block.settings.link }}" style="{% render 'surface', background: section.settings.logo_item_background %}" {{ block.shopify_attributes }}>
+                {{- block_content -}}
+              </a>
+            {%- else -%}
+              <div class="logo-list__item" {{ block.shopify_attributes }} style="{% render 'surface', background: section.settings.logo_item_background %}">
+                {{- block_content -}}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.logo_list.name",
+  "class": "shopify-section--logo-list",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "Logo list"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row",
+      "min": 3,
+      "max": 7,
+      "label": "t:sections.logo_list.items_per_row_desktop",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "t:global.colors.category"
+    },
+    {
+      "type": "color",
+      "id": "logo_item_background",
+      "label": "t:sections.logo_list.logo_background"
+    },
+    {
+      "type": "color",
+      "id": "logo_item_border",
+      "label": "t:sections.logo_list.logo_border"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "t:sections.logo_list.blocks.logo.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "t:sections.logo_list.blocks.logo.logo_image",
+          "info": "t:sections.logo_list.blocks.logo.logo_image_info"
+        },
+        {
+          "type": "range",
+          "id": "logo_width",
+          "min": 50,
+          "max": 250,
+          "unit": "px",
+          "step": 10,
+          "label": "t:sections.logo_list.blocks.logo.logo_width",
+          "default": 120
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:global.text.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.logo_list.presets.logo_list.name",
+      "blocks": [
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,139 @@
+<div class="section-spacing">
+  <div class="container container--xxs">
+    <account-login class="customer-account-box">
+      <div class="v-stack gap-6" id="login">
+        <div class="v-stack gap-4">
+          <h1 class="h3">{{ 'customer.login.title' | t }}</h1>
+          <p>{{ 'customer.login.instructions' | t }}</p>
+        </div>
+
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {%- render block -%}
+
+            {%- when 'liquid' -%}
+              {%- if block.settings.liquid != blank -%}
+                <div {{ block.shopify_attributes }}>
+                  {{- block.settings.liquid -}}
+                </div>
+              {%- endif -%}
+
+            {%- when 'fields' -%}
+              <div {{ block.shopify_attributes }}>
+                {%- capture _form_recover_capture -%}
+                  {%- form 'recover_customer_password' -%}
+                    {%- capture form_recover_status -%}
+                      {%- if form.posted_successfully? -%}
+                        {%- assign success_message = 'customer.recover_password.success_message' | t -%}
+                        {%- render 'banner', status: 'success', content: success_message -%}
+                      {%- endif -%}
+                    {%- endcapture -%}
+                  {%- endform -%}
+                {%- endcapture -%}
+
+                {%- form 'customer_login', class: 'form' -%}
+                  <input type="hidden" name="checkout_url" value="{{ block.settings.return_to | default: routes.account_url }}">
+
+                  <div class="fieldset">
+                    {%- if form.errors -%}
+                      {%- render 'banner', status: 'error', content: form.errors.messages['form'] -%}
+                    {%- endif -%}
+
+                    {%- if form_recover_status != blank -%}
+                      {{- form_recover_status -}}
+                    {%- endif -%}
+
+                    {%- assign email_label = 'customer.login.email' | t -%}
+                    {%- render 'input', type: 'email', name: 'customer[email]', label: email_label, autocomplete: 'email', required: true -%}
+
+                    <div class="relative">
+                      {%- assign password_label = 'customer.login.password' | t -%}
+                      {%- render 'input', type: 'password', name: 'customer[password]', label: password_label, autocomplete: 'current-password', required: true -%}
+
+                      <div class="input-suffix hide-on-focus">
+                        <a href="#recover" allow-hash-change class="text-xs link-faded">{{ 'customer.login.forgot_password' | t }}</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {%- assign submit_label = 'customer.login.submit' | t -%}
+                  {%- render 'button', content: submit_label, type: 'submit' -%}
+
+                  <div>
+                    <span class="text-subdued">{{ 'customer.login.no_account' | t }}</span>
+                    <a href="{{ routes.account_register_url }}" class="link-faded">{{ 'customer.login.sign_up' | t }}</a>
+                  </div>
+                {%- endform -%}
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="v-stack gap-6" id="recover" hidden>
+        <div class="v-stack gap-4">
+          <h1 class="h3">{{ 'customer.recover_password.title' | t }}</h1>
+          <p>{{ 'customer.recover_password.instructions' | t }}</p>
+        </div>
+
+        {%- form 'recover_customer_password', class: 'form' -%}
+          <div class="fieldset">
+            {%- if form.errors -%}
+              {%- render 'banner', status: 'error', content: form.errors.messages['form'] -%}
+            {%- endif -%}
+
+            {%- assign email_label = 'customer.recover_password.email' | t -%}
+            {%- render 'input', type: 'email', name: 'email', label: email_label, autocomplete: 'email', required: true -%}
+          </div>
+
+          {%- unless form.posted_successfully? -%}
+            {%- assign submit_label = 'customer.recover_password.submit' | t -%}
+            {%- render 'button', content: submit_label, type: 'submit' -%}
+          {%- endunless -%}
+
+          <div>
+            <span class="text-subdued">{{ 'customer.recover_password.remember_password' | t }}</span>
+            <a href="#login" allow-hash-change class="link-faded">{{ 'customer.recover_password.back_to_login' | t }}</a>
+          </div>
+        {%- endform -%}
+      </div>
+    </account-login>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_customers_login.name",
+  "class": "shopify-section--main-customers-login",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "fields",
+      "name": "t:sections.main_customers_login.blocks.fields.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "url",
+          "id": "return_to",
+          "label": "t:sections.main_customers_login.blocks.fields.redirect_upon_login",
+          "info": "t:sections.main_customers_login.blocks.fields.redirect_upon_login_info"
+        }
+      ]
+    },
+    {
+      "type": "liquid",
+      "name": "t:sections.main_customers_login.blocks.liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "liquid",
+          "label": "t:global.code.liquid"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,240 @@
+{%- if section.settings.image != blank or section.blocks.size > 0 -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      --image-with-text-block-aspect-ratio: {% if section.settings.image != blank and section.settings.image_size == 'auto' and section.blocks.size == 0 %}{{ section.settings.image.aspect_ratio }}{% else %}auto{% endif %};
+      --content-over-media-content-max-width: {% if section.settings.content_width == 'sm' %}190px{% elsif section.settings.content_width == 'md' %}250px{% else %}320px{% endif %};
+    }
+
+    @media screen and (min-width: 700px) {
+      #shopify-section-{{ section.id }} {
+        --content-over-media-content-max-width: {% if section.settings.content_width == 'sm' %}240px{% elsif section.settings.content_width == 'md' %}380px{% else %}520px{% endif %};
+      }
+    }
+  </style>
+
+  <div class="{% unless section.settings.remove_vertical_spacing %}section-spacing{% endunless %} color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+    <image-banner class="image-with-text-block {% if section.settings.enable_parallax %}image-with-text-block--parallax {% endif %}content-over-media content-over-media--{{ section.settings.image_size }}">
+      {%- if section.settings.image != blank -%}
+        <picture>
+          {%- if section.settings.mobile_image != blank -%}
+            <source
+                media="(max-width: 699px)"
+                srcset="{{ section.settings.mobile_image | image_url: width: '400x' }} 400w, {{ section.settings.mobile_image | image_url: width: '600x' }} 600w, {{ section.settings.mobile_image | image_url: width: '800x' }} 800w, {{ section.settings.mobile_image | image_url: width: '1000x' }} 1000w"
+                width="{{ section.settings.mobile_image.width }}"
+                height="{{ section.settings.mobile_image.height }}"
+            >
+          {%- endif -%}
+
+          {{- section.settings.image | image_url: width: section.settings.image.width | image_tag: sizes: '100vw', widths: '200,300,400,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200' -}}
+        </picture>
+      {%- else -%}
+        {{- 'lifestyle-1' | placeholder_svg_tag: 'placeholder' | replace: '<svg', '<svg preserveAspectRatio="xMinYMin slice"' -}}
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="content text-center">
+          <div class="prose text-sm sm:text-base">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'subheading' -%}
+                  {%- if block.settings.text != blank -%}
+                    <p class="h6" {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+                  {%- endif -%}
+
+                {%- when 'richtext' -%}
+                  {%- if block.settings.content != blank -%}
+                    <div {{ block.shopify_attributes }}>
+                      {{- block.settings.content -}}
+                    </div>
+                  {%- endif -%}
+
+                {%- when 'link' -%}
+                  <a {% if block.settings.url %}href="{{ block.settings.url }}"{% endif %} class="link" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</a>
+
+                {%- when 'liquid' -%}
+                  {%- if block.settings.liquid != blank -%}
+                    <div {{ block.shopify_attributes }}>
+                      {{- block.settings.liquid -}}
+                    </div>
+                  {%- endif -%}
+
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </image-banner>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.image_with_text_block.name",
+  "class": "shopify-section--image-with-text-block",
+  "tag": "section",
+  "max_blocks": 6,
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "select",
+      "id": "image_size",
+      "label": "t:global.image.size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:global.sizes.original_image_ratio"
+        },
+        {
+          "value": "xs",
+          "label": "t:global.sizes.x_small"
+        },
+        {
+          "value": "sm",
+          "label": "t:global.sizes.small"
+        },
+        {
+          "value": "md",
+          "label": "t:global.sizes.medium"
+        },
+        {
+          "value": "lg",
+          "label": "t:global.sizes.large"
+        },
+        {
+          "value": "fill",
+          "label": "t:global.sizes.fit_screen"
+        }
+      ],
+      "info": "t:global.image.ratio_avoid_cropping_info",
+      "default": "lg"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:global.image.image",
+      "info": "t:sections.image_with_text_block.image_size_recommendation"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "t:global.image.mobile_image",
+      "info": "t:sections.image_with_text_block.mobile_image_size_recommendation"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "t:global.sizes.content_width",
+      "options": [
+        {
+          "value": "sm",
+          "label": "t:global.sizes.small"
+        },
+        {
+          "value": "md",
+          "label": "t:global.sizes.medium"
+        },
+        {
+          "value": "lg",
+          "label": "t:global.sizes.large"
+        }
+      ],
+      "default": "sm"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "t:sections.image_with_text_block.enable_parallax",
+      "info": "t:sections.image_with_text_block.enable_parallax_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "remove_vertical_spacing",
+      "label": "t:global.spacing.remove_vertical_spacing",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subheading",
+      "name": "t:sections.image_with_text_block.blocks.subheading.name",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "t:global.text.text",
+          "default": "Subheading"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "name": "t:sections.image_with_text_block.blocks.paragraph.name",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:global.text.content",
+          "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+        }
+      ]
+    },
+    {
+      "type": "liquid",
+      "name": "t:sections.image_with_text_block.blocks.liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "liquid",
+          "label": "t:global.code.liquid",
+          "default": "<p>Use this text to output some custom Liquid code to include widget or dynamic code.</p>"
+        }
+      ]
+    },
+    {
+      "type": "link",
+      "name": "t:sections.image_with_text_block.blocks.link.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:global.text.text",
+          "default": "Link text"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:global.text.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.image_with_text_block.presets.image_with_text_block.name",
+      "blocks": [
+       {
+          "type": "subheading",
+          "settings": {
+            "text": "Image with text block"
+          }
+        },
+        {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Add your own custom content to give more information about your store, availability details...</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

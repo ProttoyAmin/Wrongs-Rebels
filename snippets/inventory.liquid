@@ -1,0 +1,79 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+VARIANT INVENTORY COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+This component is used to display the inventory of a given variant
+
+********************************************
+Supported variables
+********************************************
+
+* variant: the variant from which the inventory is extracted. If the variant is nil, then nothing is rendered
+* show_in_stock_quantity: decide if the quantity in stock is shown or not
+* low_threshold: the inventory quantity threshold below which the inventory is shown as "red"
+* show_progress_bar: if true, a progress bar is added
+* progress_bar_max_value: the value used as a max value to calculate the progress advancement
+{%- endcomment -%}
+
+{%- capture inventory_for_variant -%}
+  {%- if variant -%}
+    {%- liquid
+      if variant.available
+        if variant.inventory_management and variant.inventory_policy == 'deny' and variant.inventory_quantity <= low_threshold and low_threshold > 0
+          assign inventory_status = 'warning'
+          assign inventory_text = 'product.inventory.low_stock_with_quantity_count' | t: count: variant.inventory_quantity
+        else
+          if variant.inventory_policy == 'continue' and variant.inventory_quantity <= 0 and variant.requires_shipping
+            if variant.incoming and variant.next_incoming_date
+              assign next_incoming_date = variant.next_incoming_date | date: format: 'date'
+              assign inventory_status = 'warning'
+              assign inventory_text = 'product.inventory.incoming_stock' | t: next_incoming_date: next_incoming_date
+            else
+              assign inventory_status = 'warning'
+              assign inventory_text = 'product.inventory.oversell_stock' | t
+            endif
+          else
+            assign inventory_status = 'success'
+
+            if show_in_stock_quantity and variant.inventory_management
+              assign inventory_text = 'product.inventory.in_stock_with_quantity_count' | t: count: variant.inventory_quantity
+            else
+              assign inventory_text = 'product.inventory.in_stock' | t
+            endif
+          endif
+        endif
+      elsif variant.incoming
+        if variant.next_incoming_date
+          assign next_incoming_date = variant.next_incoming_date | date: format: 'date'
+          assign inventory_status = 'warning'
+          assign inventory_text = 'product.inventory.incoming_stock' | t: next_incoming_date: next_incoming_date
+        else
+          assign inventory_status = 'warning'
+          assign inventory_text = 'product.inventory.oversell_stock' | t
+        endif
+      else
+        assign inventory_status = 'error'
+        assign inventory_text = 'product.inventory.out_of_stock' | t
+      endif
+
+      if variant.inventory_management
+        assign inventory_quantity = variant.inventory_quantity | at_least: 0
+      else
+        assign inventory_quantity = progress_bar_max_value
+      endif
+    -%}
+
+    <span>{{- inventory_text -}}</span>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if inventory_for_variant != blank -%}
+  <variant-inventory class="inventory text-{{ inventory_status }}">
+    {{- inventory_for_variant -}}
+
+    {%- if show_progress_bar -%}
+      <progress-bar class="progress-bar" animate-on-scroll aria-valuenow="{{ inventory_quantity }}" aria-valuemax="{{ progress_bar_max_value | default: 50 }}"></progress-bar>
+    {%- endif -%}
+  </variant-inventory>
+{%- endif -%}

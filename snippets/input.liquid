@@ -1,0 +1,75 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+INPUT COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+This snippet generate an input (or a textarea text field if the "multiline" option is passed
+
+********************************************
+Supported variables
+********************************************
+
+* name: the HTML name attribute that is used when the field is submitted (required)
+* type: the HTML type to use (such as "email", "password"...). If none is passed, "text" is assumed.
+* value: the default value (if any) for the setting
+* form: if specified, define the form ID linked to this input
+* label: the label to show
+* label_hidden: if set to true, the label is visually hidden, but still visible for accesibility
+* show_label_as_block: if set to true, the label is shown as a block instead
+* minlength: an optional min length for input
+* maxlength: an optional max length for input
+* pattern: an optional pattern for validation purpose
+* multiline: the number of line to show (if specified, the input is set as a textarea)
+* placeholder: the placeholder will only be visible if the label is show as a block, otherwise it is ignored
+* required: if set to true, the "required" attribute is added to the input
+* disabled: check if the field is disabled
+* show_max_characters_count: if set to true, a text will appear below the input to show the maximum count
+* tabindex: set a custom tabindex attribute
+* autocomplete: a hint to the browser for help autocompletion. List can be found here: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete#values
+* autocapitalize: a hint for auto capitalization
+* autocorrect: an optional hint for browser auto correct (Safari only)
+* enterkeyhint: an optional hint for indicate the browser which button to show on the virtual keyboard
+* id_prefix: an optional prefix to be used to dissociate the ID
+{%- endcomment -%}
+
+{%- capture id -%}input-{{ id_prefix }}-{{ section.id }}-{{ form }}-{{ name | handle }}{%- endcapture -%}
+
+{%- capture optional_attributes -%}
+  {% if form %}form="{{ form }}"{% endif %}
+  {% if value and multiline == blank %}value="{{ value }}"{% endif %}
+  {% if tabindex %}tabindex="{{ tabindex }}"{% endif %}
+  {% if minlength and minlength > 0 %}minlength="{{ minlength }}"{% endif %}
+  {% if maxlength and maxlength > 0 %}maxlength="{{ maxlength }}"{% endif %}
+  {% if show_label_as_block and placeholder != blank %}placeholder="{{ placeholder | escape }}"{% endif %}
+  {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+  {% if autocapitalize %}autocapitalize="{{ autocapitalize }}"{% endif %}
+  {% if enterkeyhint %}enterkeyhint="{{ enterkeyhint }}"{% endif %}
+  {% if required %}required{% endif %}
+  {% if disabled %}disabled{% endif %}
+  {% if autocorrect %}autocorrect="{{ autocorrect }}"{% endif %}
+  {% if pattern %}pattern="{{ pattern }}"{% endif %}
+{%- endcapture -%}
+
+{%- if type == 'hidden' -%}
+  <input type="hidden" name="{{ name }}" value="{{ value }}">
+{%- else -%}
+  <div class="form-control" {{ block.shopify_attributes }}>
+    {%- if label != blank and show_label_as_block -%}
+      <label for="{{ id }}">{{ label }}</label>
+    {%- endif -%}
+
+    {%- if multiline != blank -%}
+      <textarea id="{{ id }}" class="textarea" name="{{ name }}" {% unless show_label_as_block %}placeholder="{{ label | escape }}"{% endunless %} rows="{{ multiline }}" {{ optional_attributes }}>{{- value -}}</textarea>
+    {%- else -%}
+      <input id="{{ id }}" class="input" type="{{ type | default: 'text' }}" {% if type == 'email' or type == 'tel' %}dir="ltr"{% endif %} name="{{ name }}" {% unless show_label_as_block %}placeholder="{{ label | escape }}"{% endunless %} {{ optional_attributes }}>
+    {%- endif -%}
+
+    {%- if show_max_characters_count and maxlength > 0 -%}
+      <span class="form-control__max-characters-count text-sm text-subdued text-end">{{ 'general.form.max_characters' | t: max_chars: maxlength }}</span>
+    {%- endif -%}
+
+    {%- if label != blank and show_label_as_block != true -%}
+      <label for="{{ id }}" class="{% if label_hidden %}sr-only{% else %}floating-label text-xs{% endif %}">{{ label }}</label>
+    {%- endif -%}
+  </div>
+{%- endif -%}

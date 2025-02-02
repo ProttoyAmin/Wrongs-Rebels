@@ -1,0 +1,82 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+BLOG POST CARD COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+Renders a single blog post
+
+********************************************
+Supported parameters
+********************************************
+* article: the article to render. If no article is passed then a placeholder is generated
+* blog: the blog the article belongs to (if any)
+* show_category: if set to true, the first tag of the article is shown as a category
+* show_date: if set to true, the publication date of the article will be visible
+* show_excerpt: if set to true, it will show the excerpt first or truncated part of the main content if none is set
+* show_read_more: if set to true, a read more link will be visible after the excerpt to redirect to the full blog post
+* category_class: the classes to apply on the category (default to h6)
+* title_class: the classes to apply on the title (default to h4)
+* sizes: the sizes attribute to show for loading the images
+* position: the position of the card in the list. If specified, the theme will eagerly load the first 3 cards images
+{%- endcomment -%}
+
+<div class="blog-post-card group snap-center">
+  {%- if article -%}
+    {%- if article.image != blank -%}
+      {%- liquid
+        assign loading_strategy = nil
+        
+        if section.index > 3 or position > 3
+          assign loading_strategy = 'lazy'
+        endif
+      -%}
+
+      <a href="{{ article.url }}" class="overflow-hidden">
+        {{- article.image | image_url: width: article.image.width | image_tag: loading: loading_strategy, sizes: sizes, widths: '300,400,500,600,800,1000,1200,1400,1600,1800,2000', class: 'blog-post-card__image w-full zoom-image group-hover:zoom' -}}
+      </a>
+    {%- endif -%}
+  {%- else -%}
+    <div class="overflow-hidden">
+      {{- 'image' | placeholder_svg_tag: 'blog-post-card__image placeholder placeholder--invert w-full zoom-image group-hover:zoom' -}}
+    </div>
+  {%- endif -%}
+
+  <div class="blog-post-card__info">
+    {%- capture blog_post_meta -%}
+      {%- if show_category and article.tags.size > 0 -%}
+        <a href="{{ blog.url }}/tagged/{{ article.tags.first | handle }}" class="blog-post-card__category {{ category_class | default: 'h6' }} link-faded">{{ article.tags | first }}</a>
+      {%- endif -%}
+
+      {%- if show_date -%}
+        <span class="h6 text-subdued">{{- article.published_at | time_tag: format: 'abbreviated_date' -}}</span>
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- if blog_post_meta != blank -%}
+      <div class="blog-post-card__meta">
+        {{- blog_post_meta -}}
+      </div>
+    {%- endif -%}
+
+    {%- if article -%}
+      <p>
+        <a href="{{ article.url }}" class="blog-post-card__title {{ title_class | default: 'h4' }}">{{ article.title }}</a>
+      </p>
+    {%- else -%}
+      <p class="blog-post-card__title {{ title_class | default: 'h4' }}">{{- 'general.on_boarding.blog_post_title' | t -}}</p>
+    {%- endif -%}
+
+    {%- if show_excerpt -%}
+      {%- if article -%}
+        {%- unless article.excerpt_or_content == blank -%}
+          <p class="blog-post-card__excerpt">{{ article.excerpt_or_content | strip_html | truncate: 200 }}</p>
+        {%- endunless -%}
+      {%- else -%}
+        <p class="blog-post-card__excerpt">{{ 'general.on_boarding.blog_post_excerpt' | t }}</p>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if show_read_more -%}
+      <a href="{{ article.url | default: '#' }}" class="blog-post-card__read-more link">{{ 'blog.general.read_more' | t }}</a>
+    {%- endif -%}
+  </div>
+</div>

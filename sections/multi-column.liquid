@@ -1,0 +1,395 @@
+{%- if section.blocks.size > 0 -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      --multi-column-gap: {% if section.settings.spacing == 'xs' %}1.5rem{% elsif section.settings.spacing == 'sm' %}2.5rem{% elsif section.settings.spacing == 'md' %}3.125rem{% else %}4.375rem{% endif %};
+      --multi-column-column-width: {% if section.settings.stack_on_mobile %}100%{% else %}53vw{% endif %};
+      --multi-column-grid: {% if section.settings.stack_on_mobile %}auto / repeat(auto-fit, var(--multi-column-column-width)){% else %}auto / auto-flow var(--multi-column-column-width){% endif %};
+      --multi-column-content-alignment: safe {{ section.settings.content_alignment }};
+    }
+
+    @media screen and (min-width: 700px) {
+      #shopify-section-{{ section.id }} {
+        --multi-column-columns-per-row: 2;
+        --multi-column-column-width: {% if section.settings.stack_on_mobile %}calc(100% / var(--multi-column-columns-per-row) - var(--multi-column-gap) * ((var(--multi-column-columns-per-row) - 1) / var(--multi-column-columns-per-row))){% else %}38vw{% endif %};
+      }
+    }
+
+    @media screen and (min-width: 999px) {
+      #shopify-section-{{ section.id }} {
+        --multi-column-gap: {% if section.settings.spacing == 'xs' %}1.875rem{% elsif section.settings.spacing == 'sm' %}3.125rem{% elsif section.settings.spacing == 'md' %}4.375rem{% else %}5.625rem{% endif %};
+        --multi-column-columns-per-row: {{ section.settings.columns_per_row }};
+        --multi-column-column-width: calc(100% / var(--multi-column-columns-per-row) - var(--multi-column-gap) * ((var(--multi-column-columns-per-row) - 1) / var(--multi-column-columns-per-row)));
+        --multi-column-grid: auto / repeat(auto-fit, var(--multi-column-column-width));
+      }
+    }
+  </style>
+
+  {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+  <div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+    <div class="container">
+      <div class="section-stack">
+        {%- render 'section-header', subheading: section.settings.subheading, heading: section.settings.title, content: section.settings.content, text_alignment: section.settings.content_alignment -%}
+
+        <multi-column class="multi-column {% unless section.settings.stack_on_mobile %}scroll-area snap-x bleed md:unbleed{% endunless %}">
+          {%- for block in section.blocks -%}
+            <div class="multi-column__item {% if section.settings.overlap_image and block.settings.title != blank %}multi-column__item--overlap{% endif %} snap-center group" {{ block.shopify_attributes }}>
+              {%- capture sizes_attribute -%}
+                (max-width: 699px) 53vw, (max-width: 999px) 38vw, calc((100vw - 3rem * 2) / {{ section.settings.columns_per_row }})
+              {%- endcapture -%}
+
+              {%- liquid
+                capture media_content
+                  if block.type == 'image_with_text' and block.settings.image != blank
+                    assign loading_strategy = nil
+
+                    if forloop.index > 2 or section.location == 'footer'
+                      assign loading_strategy = 'lazy'
+                    endif
+
+                    echo block.settings.image | image_url: width: block.settings.image.width | image_tag: loading: loading_strategy, sizes: sizes_attribute, widths: '300,400,500,600,800,1000,1200,1400,1600,1800', class: 'zoom-image group-hover:zoom'
+                  elsif block.type == 'video_with_text' and block.settings.video != blank
+                    if block.settings.autoplay and block.settings.loop
+                      assign show_controls = false
+                    else
+                      assign show_controls = true
+                    endif
+
+                    render 'media', media: block.settings.video, autoplay: block.settings.autoplay, loop: block.settings.loop, controls: show_controls, sizes: sizes_attribute, play_button_background: block.settings.play_button_background
+                  endif
+                endcapture
+              -%}
+
+              {%- if media_content != blank -%}
+                {%- if block.type == 'image_with_text' and block.settings.link_url != blank -%}
+                  <a href="{{ block.settings.link_url }}" class="overflow-hidden">
+                    {{- media_content -}}
+                  </a>
+                {%- else -%}
+                  <div class="overflow-hidden">
+                    {{- media_content -}}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+
+              {%- if block.settings.title != blank or block.settings.content != blank or block.settings.link_text != blank -%}
+                <div class="prose text-{{ section.settings.text_alignment }}">
+                  {%- if block.settings.title != blank -%}
+                    <p class="{{ block.settings.heading_tag }}">{{ block.settings.title }}</p>
+                  {%- endif -%}
+
+                  {{- block.settings.content -}}
+
+                  {%- if block.settings.link_text != blank -%}
+                    <a href="{{ block.settings.link_url }}" class="link">{{ block.settings.link_text | escape }}</a>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </multi-column>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.multi_column.name",
+  "class": "shopify-section--multi-column",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns_per_row",
+      "min": 2,
+      "max": 6,
+      "label": "t:sections.multi_column.columns_per_row",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_on_mobile",
+      "label": "t:sections.multi_column.stack_on_mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "overlap_image",
+      "label": "t:sections.multi_column.overlap_image",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:global.position.content_position",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:global.position.left"
+        },
+        {
+          "value": "center",
+          "label": "t:global.position.center"
+        },
+        {
+          "value": "end",
+          "label": "t:global.position.right"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:global.text.alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:global.position.left"
+        },
+        {
+          "value": "center",
+          "label": "t:global.position.center"
+        },
+        {
+          "value": "end",
+          "label": "t:global.position.right"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "select",
+      "id": "spacing",
+      "label": "t:global.spacing.column_spacing",
+      "options": [
+        {
+          "value": "xs",
+          "label": "t:global.sizes.x_small"
+        },
+        {
+          "value": "sm",
+          "label": "t:global.sizes.small"
+        },
+        {
+          "value": "md",
+          "label": "t:global.sizes.medium"
+        },
+        {
+          "value": "lg",
+          "label": "t:global.sizes.large"
+        }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "header",
+      "content": "t:global.section.header_category"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading",
+      "default": "About"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "Multi-column"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:global.text.content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_with_text",
+      "name": "t:sections.multi_column.blocks.image_with_text.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:global.image.image",
+          "info": "t:sections.multi_column.blocks.image_with_text.image_size_recommendation"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "t:global.text.heading",
+          "default": "Column title"
+        },
+        {
+          "type": "select",
+          "id": "heading_tag",
+          "label": "t:global.text.heading_style",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "h5",
+              "label": "H5"
+            },
+            {
+              "value": "h6",
+              "label": "H6"
+            }
+          ],
+          "default": "h3"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:global.text.content",
+          "default": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:global.text.link_url"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "t:global.text.link_text"
+        }
+      ]
+    },
+    {
+      "type": "video_with_text",
+      "name": "t:sections.multi_column.blocks.video_with_text.name",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "t:global.video.video"
+        },
+        {
+          "type": "checkbox",
+          "id": "autoplay",
+          "label": "t:global.video.autoplay",
+          "info": "t:global.video.autoplay_info",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "loop",
+          "label": "t:global.video.loop",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "play_button_background",
+          "label": "t:sections.multi_column.blocks.video_with_text.play_button_background",
+          "default": "#ffffff"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "t:global.text.heading",
+          "default": "Column title"
+        },
+        {
+          "type": "select",
+          "id": "heading_tag",
+          "label": "t:global.text.heading_style",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "h5",
+              "label": "H5"
+            },
+            {
+              "value": "h6",
+              "label": "H6"
+            }
+          ],
+          "default": "h3"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:global.text.content",
+          "default": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:global.text.link_url"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "t:global.text.link_text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.multi_column.presets.multi_column.name",
+      "blocks": [
+        {
+          "type": "image_with_text",
+          "settings": {}
+        },
+        {
+          "type": "image_with_text",
+          "settings": {}
+        },
+        {
+          "type": "image_with_text",
+          "settings": {}
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

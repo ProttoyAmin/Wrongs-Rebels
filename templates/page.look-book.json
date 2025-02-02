@@ -1,0 +1,219 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "custom_css": [
+        ".section-header {padding-top: 70px; font-size: 60px; color: #000;}"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "show_title": true,
+        "page_width": "xs"
+      }
+    },
+    "collection_list_H88DtT": {
+      "type": "collection-list",
+      "blocks": {
+        "collection_QV8tXF": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "scheme-4",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 0",
+            "button_link": "",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_VYf9F4": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_G3TdXC": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_h4AUKf": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_WRJPgK": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_HVipD4": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_zBi8wj": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_TVYJA7": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_YNL7JU": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        },
+        "collection_ADyqXK": {
+          "type": "collection",
+          "settings": {
+            "color_scheme": "",
+            "collection": "new-arrival",
+            "expand_collection": false,
+            "content_position": "place-self-end-center text-center",
+            "subheading": "",
+            "title": "",
+            "button_text": "Look 1",
+            "button_link": "shopify://pages/look-details",
+            "button_style": "outline",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30
+          }
+        }
+      },
+      "block_order": [
+        "collection_QV8tXF",
+        "collection_VYf9F4",
+        "collection_G3TdXC",
+        "collection_h4AUKf",
+        "collection_WRJPgK",
+        "collection_HVipD4",
+        "collection_zBi8wj",
+        "collection_TVYJA7",
+        "collection_YNL7JU",
+        "collection_ADyqXK"
+      ],
+      "custom_css": [],
+      "settings": {
+        "color_scheme": "",
+        "separate_section_with_border": false,
+        "image_size": "auto",
+        "show_text_outside": false,
+        "space_items": true,
+        "stack_collections": true,
+        "collections_per_row_mobile": "2",
+        "collections_per_row_desktop": 3,
+        "subheading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis ",
+        "title": "",
+        "content": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "collection_list_H88DtT"
+  ]
+}

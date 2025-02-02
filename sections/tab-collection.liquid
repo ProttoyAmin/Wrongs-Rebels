@@ -1,0 +1,143 @@
+<style>  
+    .container {
+      margin: 0; 
+    padding: 8px; 
+    width: 100%; 
+  }
+    }
+      .tab-content {
+      padding: 0 5px;
+    }
+    .tab-content .card-body {
+      padding: 0;
+    }
+  
+    ul#myTab {
+      border: none !important;
+       margin-bottom: 30px;
+    }
+    .col-md-3.col-sm-6 {
+      padding: .5px !important;
+    }
+    .card {
+        border: 0;}
+        border-radius:0;}
+      .nav-tabs button {
+      border: none;
+    }
+    .pro-link {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 10px 0 0;
+      margin: 0 10px 0 0;
+      color: #7d7d7d !important;
+      border: none;
+    }
+    .nav-tabs .pro-link:focus, .nav-tabs .pro-link:hover {
+        isolation: inherit;
+        border-color: transparent;
+        color: #000;
+    }
+  
+    .nav-tabs .nav-item.show .pro-link, .nav-tabs .pro-link.active {
+        color: #000;
+        border-color: transparent;
+        border-bottom: 3px solid #7d7d7d;
+    }
+  </style>
+
+
+
+<div class="tab-collections my-4">
+  <div class="container">
+    {% if section.blocks.size > 0 %}
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for block in section.blocks %}
+          <li class="nav-item" role="presentation">
+            <button
+              class="pro-link{% if forloop.first %} active{% endif %}"
+              id="tab-{{ forloop.index }}"
+              data-bs-toggle="tab"
+              data-bs-target="#collection_{{ forloop.index }}"
+              type="button"
+              role="tab"
+              aria-controls="collection_{{ forloop.index }}"
+              aria-selected="true"
+            >
+              {% if block.settings.collection_title != blank %}
+                {{ block.settings.collection_title }}
+              {% else %}
+                {{ block.settings.collection.title | default: 'Collection title' }}
+              {% endif %}
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        {% for block in section.blocks %}
+          <div
+            class="tab-pane fade{% if forloop.first %} show active{% endif %}"
+            id="collection_{{ forloop.index }}"
+            role="tabpanel"
+            aria-labelledby="collection_{{ forloop.index }}"
+            {{ block.shopify_attributes }}
+          >
+            {% assign collection = block.settings.collection %}
+            <div class="row">
+              {% for product in collection.products %}
+                <div class="col-md-3 col-sm-6">
+                  <div class="card my-2">
+                    <div class="card-body">
+                      {%- render 'product-card',
+                        product: product,
+                        reveal: should_reveal,
+                        position: forloop.index,
+                        hide_product_information: section.settings.hide_product_information,
+                        block: block
+                      -%}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+{% schema %}
+{
+    "name": "Tab Collections",
+    "settings": [
+    ],
+    "blocks":[
+        {
+            "type": "collection",
+            "name": "Collection",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "collection_title",
+                    "label": "Collection title"
+                },
+                {
+                    "type": "collection",
+                    "id": "collection",
+                    "label": "Select collection"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Tab Collection"
+        }
+    ]
+}
+{% endschema %}

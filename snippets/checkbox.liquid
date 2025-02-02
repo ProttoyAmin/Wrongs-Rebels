@@ -1,0 +1,46 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+CHECKBOX COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+This component is used to create the necessary markup to create an input checkbox
+
+********************************************
+Supported variables
+********************************************
+
+* name: the HTML name attribute that is used when the field is submitted.
+* type: by default the snippet generates a checkbox, but you can pass a "radio" type to generate radio buttons
+* form: if specified, define the form ID linked to this input
+* checked: if the checkbox is checked or not
+* disabled: if the checkbox is disabled or not
+* required: if the checkbox needs to be checked or not
+* value: the value to use (use 1 if none is passed)
+* switch: if set to true, the checkbox is rendered as a switch
+* label: the label to show
+* hide_checkbox: if set to true, the checkbox itself is hidden and a dot will appear when selected. This is used for
+                 instance in collection page
+* id_prefix: an optional prefix to be used to dissociate the ID
+{%- endcomment -%}
+
+{%- capture id -%}checkbox-{{ id_prefix }}-{{ section.id }}-{{ form }}-{{ name }}-{{ value | handle }}{%- endcapture -%}
+
+{%- capture optional_attributes -%}
+  {% if form %}form="{{ form }}"{% endif %}
+  {% if value %}value="{{ value | default: 1 }}"{% endif %}
+  {% if disabled %}disabled{% endif %}
+  {% if required %}required{% endif %}
+  {% if checked %}checked{% endif %}
+{%- endcapture -%}
+
+<div class="checkbox-control" {{ block.shopify_attributes }}>
+  {%- if switch -%}
+    <input id="{{ id | escape }}" class="switch" type="{{ type | default: 'checkbox' }}" role="switch" name="{{ name }}" {{ optional_attributes }}>
+  {%- else -%}
+    <input id="{{ id | escape }}" class="{% if hide_checkbox %}dot-checkbox{% else %}checkbox{% endif %}" type="{{ type | default: 'checkbox' }}" name="{{ name }}" {{ optional_attributes }}>
+  {%- endif -%}
+
+  {%- if label != blank -%}
+    <label for="{{ id | escape }}">{{ label }}</label>
+  {%- endif -%}
+</div>

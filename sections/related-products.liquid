@@ -1,0 +1,186 @@
+<product-recommendations class="block" product="{{ product.id }}" limit="{{ section.settings.recommendations_count }}" intent="related">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <style>
+      #shopify-section-{{ section.id }} {
+        --product-list-items-per-row: {{ section.settings.products_per_row_mobile | times: 1 }};
+        --product-list-horizontal-spacing-factor: {{ section.settings.horizontal_spacing_factor }};
+        --product-list-vertical-spacing-factor: {{ section.settings.vertical_spacing_factor }};
+      }
+
+      @media screen and (min-width: 700px) {
+        #shopify-section-{{ section.id }} {
+          --product-list-items-per-row: {{ section.settings.products_per_row_desktop }};
+        }
+      }
+    </style>
+
+    {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+    <div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+      <div class="container">
+        <div class="section-stack">
+          {%- render 'section-header', subheading: section.settings.subheading, heading: section.settings.title, content: section.settings.content -%}
+
+          {%- capture product_list -%}
+            {%- for product in recommendations.products -%}
+              {%- render 'product-card', product: product, reveal: settings.stagger_products_apparition, position: forloop.index, hide_product_information: section.settings.hide_product_information -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+
+          {%- if section.settings.stack_products -%}
+            <product-list class="product-list {% if section.settings.hide_product_information %}product-list--compact{% endif %} justify-center">
+              {{- product_list -}}
+            </product-list>
+          {%- else -%}
+            {%- assign carousel_id = 'carousel-' | append: section.id -%}
+
+            <product-list class="floating-controls-container floating-controls-container--inside floating-controls-container--on-hover">
+              <carousel-prev-button class="floating-controls-container__control" aria-controls="{{ carousel_id }}">
+                <button type="button" class="prev-next-button prev-next-button--prev circle-button hover:animate-icon-inline" disabled>
+                  <span class="sr-only">{{ 'general.accessibility.previous' | t }}</span>
+                  {%- render 'icon' with 'arrow-left', direction_aware: true -%}
+                </button>
+              </carousel-prev-button>
+
+              <scroll-carousel id="{{ carousel_id }}" group-cells allow-drag class="product-list {% if section.settings.hide_product_information %}product-list--compact{% endif %} product-list--carousel scroll-area bleed md:unbleed">
+                {{- product_list -}}
+              </scroll-carousel>
+
+              <carousel-next-button class="floating-controls-container__control" aria-controls="{{ carousel_id }}">
+                <button type="button" class="prev-next-button prev-next-button--next circle-button hover:animate-icon-inline">
+                  <span class="sr-only">{{ 'general.accessibility.next' | t }}</span>
+                  {%- render 'icon' with 'arrow-right', direction_aware: true -%}
+                </button>
+              </carousel-next-button>
+            </product-list>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "t:sections.related_products.name",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "class": "shopify-section--related-products",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.related_products.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_product_information",
+      "label": "t:global.product_list.hide_product_information",
+      "info": "t:global.product_list.hide_product_information_info"
+    },
+    {
+      "type": "header",
+      "content": "t:global.product_list.product_list_category"
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_products",
+      "label": "t:global.product_list.stack_products",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "recommendations_count",
+      "min": 2,
+      "max": 10,
+      "label": "t:sections.related_products.recommendations_count",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "products_per_row_mobile",
+      "label": "t:global.product_list.products_per_row_mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_desktop",
+      "min": 2,
+      "max": 6,
+      "label": "t:global.product_list.products_per_row_desktop",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "t:global.product_list.spacing_category",
+      "info": "t:global.product_list.spacing_category_info"
+    },
+    {
+      "type": "range",
+      "min": 0.2,
+      "max": 2,
+      "step": 0.1,
+      "id": "horizontal_spacing_factor",
+      "label": "t:global.product_list.horizontal_spacing_factor",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "min": 0.2,
+      "max": 2,
+      "step": 0.1,
+      "id": "vertical_spacing_factor",
+      "label": "t:global.product_list.vertical_spacing_factor",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "t:global.section.header_category"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "Related products"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:global.text.content"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.related_products.presets.related_products.name"
+    }
+  ]
+}
+{% endschema %}

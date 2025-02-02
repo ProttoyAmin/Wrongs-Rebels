@@ -1,0 +1,37 @@
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }}">
+  <div class="container container--xs">
+    <div class="empty-state">
+      <div class="prose">
+        <h1 class="h4">{{ '404.general.title' | t }}</h1>
+        <p>{{ '404.general.not_found_info' | t }}</p>
+
+        {%- assign button_content = '404.general.continue_shopping' | t -%}
+        {%- assign button_link = section.settings.link | default: routes.all_products_collection_url -%}
+        {%- render 'button', content: button_content, href: button_link -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_not_found.name",
+  "class": "shopify-section--404",
+  "tag": "section",
+  "settings" : [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.main_not_found.button_link"
+    }
+  ]
+}
+{% endschema %}

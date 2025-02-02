@@ -1,0 +1,99 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+STORE PICKUP AVAILABILITY
+----------------------------------------------------------------------------------------------------------------------
+
+This component renders the store availability for a given variant, along the associated modal
+
+********************************************
+Supported variables
+********************************************
+
+* product_variant: the variant to which the availability is rendered
+{%- endcomment -%}
+
+{%- assign pick_up_availabilities = product_variant.store_availabilities | where: 'pick_up_enabled', true -%}
+
+{%- if product_variant != nil -%}
+  <pickup-availability class="pickup-availability">
+    {%- if pick_up_availabilities.size > 0 -%}
+      {%- capture drawer_id -%}store-availability-drawer-{{ product_variant.product.id }}{%- endcapture -%}
+
+      <div class="h-stack align-start gap-2.5">
+        {%- assign closest_location = pick_up_availabilities.first -%}
+
+        {%- if closest_location.available -%}
+          {%- render 'icon' with 'success', offset: true, class: 'text-success' -%}
+        {%- else -%}
+          {%- render 'icon' with 'error', offset: true, class: 'text-error' -%}
+        {%- endif -%}
+
+        <div class="v-stack justify-items-start gap-2">
+          <div>
+            {%- if closest_location.available -%}
+              <p>{{- 'product.store_availability.pick_up_available_at' | t: location_name: closest_location.location.name -}}</p>
+              <p>{{ closest_location.pick_up_time }}</p>
+
+              {%- if pick_up_availabilities.size == 1 -%}
+                {%- assign button_text = 'product.store_availability.view_store_info' | t -%}
+              {%- else -%}
+                {%- assign button_text = 'product.store_availability.check_other_stores' | t -%}
+              {%- endif -%}
+            {%- else -%}
+              <p>{{- 'product.store_availability.pick_up_unavailable_at' | t: location_name: closest_location.location.name -}}</p>
+
+              {%- if pick_up_availabilities.size > 1 -%}
+                {%- assign button_text = 'product.store_availability.check_other_stores' | t -%}
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+
+          <button type="button" class="link" aria-controls="{{ drawer_id }}" aria-expanded="false">{{ button_text }}</button>
+        </div>
+      </div>
+
+      <x-drawer id="{{ drawer_id }}" class="drawer color-scheme color-scheme--dialog">
+        <div class="h-stack gap-4" slot="header">
+          {%- assign image = product_variant.featured_media | default: product_variant.product.featured_media -%}
+          {{- image | image_url: width: image.width | image_tag: loading: 'lazy', sizes: '48px', widths: '48,96,144', class: 'constrained-image', style: '--image-max-width: 48px' -}}
+
+          <div class="v-stack">
+            <p class="h5">{{ product_variant.product.title }}</p>
+
+            {%- unless product_variant.product.has_only_default_variant -%}
+              <p class="text-subdued text-sm">{{ product_variant.title }}</p>
+            {%- endunless -%}
+          </div>
+        </div>
+
+        <div class="v-stack gap-4 divide-y">
+          {%- for availability in pick_up_availabilities -%}
+            <div class="pickup-location">
+              <div>
+                <p class="bold">{{ availability.location.name }}</p>
+
+                <div class="h-stack align-start gap-2.5">
+                  {%- if availability.available -%}
+                    {%- render 'icon' with 'success', offset: true, class: 'text-success' -%}
+                    <span>{{- 'product.store_availability.pick_up_available' | t }}, {{ availability.pick_up_time -}}</span>
+                  {%- else -%}
+                    {%- render 'icon' with 'error', offset: true, class: 'text-error' -%}
+                    <span>{{- 'product.store_availability.pick_up_currently_unavailable' | t -}}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              <div>
+                {{- availability.location.address | format_address -}}
+
+                {%- if availability.location.address.phone.size > 0 -%}
+                  <a href="tel:{{ availability.location.address.phone }}">{{ availability.location.address.phone }}</a>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </x-drawer>
+    {%- endif -%}
+  </pickup-availability>
+{%- endif -%}

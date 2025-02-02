@@ -1,0 +1,61 @@
+
+
+
+
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+ACCORDION COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+This component is used to create an accordion (also called as collapsible). It internally uses the "details" HTML
+tag so that it can also be used without any JavaScript.
+
+********************************************
+Supported parameters
+********************************************
+
+* title: the title to use for the toggle button
+* content: the hidden content inside the accordion
+* icon: an optional icon name outputted before the title
+* custom_icon: an optional custom icon file outputted before the title
+* open: if set to true the accordion is open by default
+* prose_content: if set to true, the content is considered as prose and the associated class is added
+* show_title_as_text: if set to true the title is shown as text instead of using heading style
+* show_arrow: if set to true, the accordion will show an arrow instead of the standard + icon
+* size: can be "sm" or "lg" (if none is passed, the small size is used)
+* bleed: if set to true, the accordion will bleed on mobile
+* block: an optional block to output theme editor attributes
+{%- endcomment -%}
+
+<accordion-disclosure class="accordion {% if size %}accordion--{{ size }}{% endif %} {% if bleed %}bleed sm:unbleed{% endif %}" {{ block.shopify_attributes }}>
+  <details class="accordion__disclosure group" {% if open %}open aria-expanded="true"{% else %}aria-expanded="false"{% endif %}>
+    <summary>
+      {%- comment -%}iOS 14 does not support flex on the summary itself, so we have to use this extra div{%- endcomment -%}
+      <span class="accordion__toggle {% if show_title_as_text %}text-lg{% else %}h6{% endif %}">
+        {%- if custom_icon != blank or icon != 'none' -%}
+          <span class="text-with-icon gap-4">
+            {%- if custom_icon != blank -%}
+              {{- custom_icon | image_url: width: custom_icon.width | image_tag: sizes: '16px', widths: '16,32,48', class: 'constrained-image', style: '--image-max-width: 16px' -}}
+            {%- else -%}
+              {%- render 'icon' with icon, width: 16 -%}
+            {%- endif -%}
+
+            {{- title -}}
+          </span>
+        {%- else -%}
+          <span>{{ title }}</span>
+        {%- endif -%}
+
+        {%- if show_arrow -%}
+          {%- render 'icon' with 'chevron-down', class: 'group-expanded:rotate' -%}
+        {%- else -%}
+          <span class="animated-plus group-expanded:rotate" aria-hidden="true"></span>
+        {%- endif -%}
+      </span>
+    </summary>
+
+    <div class="accordion__content {% if prose_content %}prose{% endif %}">
+      {{- content -}}
+    </div>
+  </details>
+</accordion-disclosure>

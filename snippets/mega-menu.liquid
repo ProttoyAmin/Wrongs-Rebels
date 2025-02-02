@@ -1,0 +1,62 @@
+
+<style>
+
+  .mega-menu mega-menu__promo{
+    display: flex; /* Ensure a flex layout */
+    justify-content: flex-start;
+    text-align: left;
+    padding-left: 0;
+    margin-left: 0;
+  }
+  
+</style>
+
+
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+MEGA MENU COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+Render the mega-menu. The mega-menu is a kind of menu optimized for showing a large number of items into several
+columns.
+
+********************************************
+Supported variables
+********************************************
+
+* link: the link from which we need to render the mega-menu. The link must always be a second level link, but it can
+        also be empty (no links), which is the case if the merchant only want to show images, for instance.
+* block: the block containing all the information about the menu to render
+{%- endcomment -%}
+
+<div class="mega-menu {% if block.settings.images_position == 'left' %}mega-menu--reverse{% endif %}" {{ block.shopify_attributes }}>
+  {%- if link.levels > 0 -%}
+    <ul class="mega-menu__linklist unstyled-list">
+      {%- for sub_link in link.links -%}
+        <li class="v-stack justify-items-start gap-2">
+          <a href="{{ sub_link.url }}">{{ sub_link.title }}</a>
+
+          {%- if sub_link.links.size > 0 -%}
+            <ul class="v-stack gap-2.5 unstyled-list">
+              {%- for sub_sub_link in sub_link.links -%}
+                <li>
+                  <a href="{{ sub_sub_link.url }}" class="h5">{{ sub_sub_link.title }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+  {%- capture mega_menu_content -%}
+    {%- render 'mega-menu-images', context: 'menu', block: block -%}
+  {%- endcapture -%}
+
+  {%- if mega_menu_content != blank -%}
+    <div class="mega-menu__promo">
+      {{- mega_menu_content -}}
+    </div>
+  {%- endif -%}
+</div>

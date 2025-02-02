@@ -1,0 +1,110 @@
+<div class="section-spacing section-spacing--tight">
+  <div class="container container--xxs">
+    <div class="customer-account-box">
+      <div class="v-stack gap-6">
+        <div class="v-stack gap-4">
+          <h1 class="h3">{{ 'customer.register.title' | t }}</h1>
+          <p>{{ 'customer.register.instructions' | t }}</p>
+        </div>
+
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {%- render block -%}
+
+            {%- when 'liquid' -%}
+              {%- if block.settings.liquid != blank -%}
+                <div {{ block.shopify_attributes }}>
+                  {{- block.settings.liquid -}}
+                </div>
+              {%- endif -%}
+
+            {%- when 'fields' -%}
+              <div {{ block.shopify_attributes }}>
+                {%- form 'create_customer', class: 'form' -%}
+                  <div class="fieldset">
+                    {% liquid
+                      if form.errors
+                        assign form_errors = form.errors | default_errors
+                        render 'banner', status: 'error', content: form_errors
+                      endif
+
+                      if request.locale.iso_code == 'ja'
+                        assign last_name_label = 'customer.register.last_name' | t
+                        render 'input', name: 'customer[last_name]', label: last_name_label, autocomplete: 'family-name', required: true
+
+                        assign first_name_label = 'customer.register.first_name' | t
+                        render 'input', name: 'customer[first_name]', label: first_name_label, autocomplete: 'given-name', required: true
+                      else
+                        assign first_name_label = 'customer.register.first_name' | t
+                        render 'input', name: 'customer[first_name]', label: first_name_label, autocomplete: 'given-name', required: true
+
+                        assign last_name_label = 'customer.register.last_name' | t
+                        render 'input', name: 'customer[last_name]', label: last_name_label, autocomplete: 'family-name', required: true
+                      endif
+
+                      assign email_label = 'customer.register.email' | t
+                      render 'input', type: 'email', name: 'customer[email]', label: email_label, autocomplete: 'email', required: true
+
+                      assign password_label = 'customer.register.password' | t
+                      render 'input', type: 'password', name: 'customer[password]', label: password_label, minlength: 5, autocomplete: 'new-password', required: true
+
+                      if block.settings.show_marketing_consent
+                        assign consent_label = 'customer.register.accepts_marketing' | t
+                        render 'checkbox', name: 'customer[accepts_marketing]', label: consent_label
+                      endif
+                    %}
+                  </div>
+
+                  {%- assign submit_label = 'customer.register.submit' | t -%}
+                  {%- render 'button', content: submit_label, type: 'submit' -%}
+
+                  <div>
+                    <span class="text-subdued">{{ 'customer.register.already_have_account' | t }}</span>
+                    <a href="{{ routes.account_login_url }}" class="link-faded">{{ 'customer.register.login' | t }}</a>
+                  </div>
+                {%- endform -%}
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_customers_register.name",
+  "class": "shopify-section--main-customers-register",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "fields",
+      "name": "t:sections.main_customers_register.blocks.fields.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_marketing_consent",
+          "label": "t:sections.main_customers_register.blocks.fields.show_marketing_consent",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "liquid",
+      "name": "t:sections.main_customers_register.blocks.liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "liquid",
+          "label": "t:global.code.liquid"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,724 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+ICON
+----------------------------------------------------------------------------------------------------------------------
+
+Render a specific icon.
+
+********************************************
+Supported variables
+********************************************
+
+* with attribute: the name of the icon to render (eg: {%- render 'icon' with 'cart' -%}
+* class: an optional class to add to the SVG icon
+* offset: if set to true, the icon will be offsetted based on its height on the vertical axis to be aligned with neighboring element
+* direction_aware: if set to true, the icon will be rotated 180deg in RTL context
+* width: an optional width to render the icon (the height will scale accordingly)
+* stroke_width: an optional stroke width to use to replace the default global width
+{%- endcomment -%}
+
+{%- capture class -%}{{ class }} icon icon-{{ icon | handle }} {% if offset %}offset-icon{% endif %} {% if direction_aware %}icon--direction-aware{% endif %}{%- endcapture -%}
+
+{%- case icon -%}
+  {%- comment -%} UI {%- endcomment -%}
+  {%- when 'chevron-down' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 10 }}" class="{{ class | strip }}" viewBox="0 0 10 10">
+      <path d="m1 3 4 4 4-4" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'chevron-up' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 10 }}" class="{{ class | strip }}" viewBox="0 0 10 10">
+      <path d="M9 7 5 3 1 7" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'chevron-left' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 10 }}" class="{{ class | strip }}" viewBox="0 0 10 10">
+      <path d="M7 1 3 5l4 4" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'chevron-right' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 10 }}" class="{{ class | strip }}" viewBox="0 0 10 10">
+      <path d="m3 9 4-4-4-4" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'arrow-down' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 18 }}" class="{{ class | strip }}" viewBox="0 0 18 16">
+      <path d="m1 4 8 8 8-8" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'arrow-up' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 18 }}" class="{{ class | strip }}" viewBox="0 0 18 16">
+      <path d="M17 12 9 4l-8 8" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'arrow-left' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 16 }}" class="{{ class | strip }}" viewBox="0 0 16 18">
+      <path d="M11 1 3 9l8 8" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'arrow-right' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 16 }}" class="{{ class | strip }}" viewBox="0 0 16 18">
+      <path d="m5 17 8-8-8-8" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'dropdown-chevron' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 10 }}" class="{{ class | strip }}" viewBox="0 0 10 6">
+      <path d="m1 1 4 4 4-4" stroke="currentColor" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'minus' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 12 }}" class="{{ class | strip }}" viewBox="0 0 12 12">
+      <path d="M0 6h12" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}"/>
+    </svg>
+
+  {%- when 'plus' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 12 }}" class="{{ class | strip }}" viewBox="0 0 12 12">
+      <path d="M6 0v12M0 6h12" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}"/>
+    </svg>
+
+  {%- when 'close' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 16 }}" class="{{ class | strip }}" viewBox="0 0 16 16">
+      <path d="m1 1 14 14M1 15 15 1" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}"/>
+    </svg>
+
+  {% when 'success' %}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 13 }}" class="{{ class | strip }}" viewBox="0 0 13 9">
+      <path fill="none" d="M1 4l4 4 7-7" stroke="currentColor" stroke-linecap="square"></path>
+    </svg>
+
+  {% when 'error' %}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 11 }}" class="{{ class | strip }}" viewBox="0 0 11 10">
+      <path fill="none" d="M10 9.5l-9-9m9 0l-9 9" stroke="currentColor"></path>
+    </svg>
+
+  {%- when 'mute' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 25 }}" class="{{ class | strip }}" viewBox="0 0 25 24">
+      <path d="M5.335 16.366H1V8.42h4.335m0 7.947V8.42m0 7.947 7.587 5.42V3L5.335 8.419" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20.287 21.083A11.98 11.98 0 0 0 24 12.393c0-3.422-1.425-6.493-3.713-8.69m-3.582 3.582a6.947 6.947 0 0 1 0 10.215" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}"/>
+    </svg>
+
+  {%- when 'unmute' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 25 }}" class="{{ class | strip }}" viewBox="0 0 25 24">
+      <path d="M5.335 16.366H1V8.42h4.335m0 7.947V8.42m0 7.947 1.204.86M5.335 8.42 12.922 3v8M9 18.984l3.921 2.801V15.5" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20.287 21.083A11.98 11.98 0 0 0 24 12.393c0-3.422-1.425-6.493-3.713-8.69m-3.582 3.582a6.947 6.947 0 0 1 0 10.215" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}"/>
+      <path d="m22.5 1.5-21 21" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'rss' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 16 }}" class="{{ class | strip }}" viewBox="0 0 16 16">
+      <circle cx="3" cy="13" r="2" fill="currentColor"></circle>
+      <path d="M15 15h-2.7C12.3 8.8 7.2 3.7 1 3.7V1c7.7 0 14 6.3 14 14z" fill="currentColor"></path>
+      <path d="M10.3 15H7.7c0-3.7-3-6.7-6.7-6.7V5.7c5.1 0 9.3 4.2 9.3 9.3z" fill="currentColor"></path>
+    </svg>
+
+  {%- when 'discount' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M22.707 12.293l-11-11A1.002 1.002 0 0 0 11 1H2a1 1 0 0 0-1 1v9c0 .265.105.52.293.707l11 11a.997.997 0 0 0 1.414 0l9-9a.999.999 0 0 0 0-1.414zM7 9a2 2 0 1 1-.001-3.999A2 2 0 0 1 7 9zm6 8.414L8.586 13 10 11.586 14.414 16 13 17.414zm3-3L11.586 10 13 8.586 17.414 13 16 14.414z" fill="currentColor"></path>
+    </svg>
+
+  {%- when 'lock' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 18 }}" class="{{ class | strip }}" viewBox="0 0 18 24">
+      <path clip-rule="evenodd" d="M.75 11.25a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v10.5a1.5 1.5 0 0 1-1.5 1.5H2.25a1.5 1.5 0 0 1-1.5-1.5v-10.5Z" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3.75 9.75V6a5.25 5.25 0 0 1 10.5 0v3.75M9 15v3" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'star-rating' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 12 }}" class="{{ class | strip }}" viewBox="0 0 12 11">
+      <path d="M6 0v8.635L2.292 11 3.48 6.87 0 4.202l4.443-.187L6 0Zm0 0v8.635L9.708 11 8.52 6.87 12 4.202l-4.443-.187L6 0Z" fill="{{ settings.product_rating_color }}"/>
+    </svg>
+
+  {%- when 'star-rating-half' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 12 }}" class="{{ class | strip }}" viewBox="0 0 12 11">
+      <path d="M6 0v8.635L2.292 11 3.48 6.87 0 4.202l4.443-.187L6 0Z" fill="{{ settings.product_rating_color }}"/>
+      <path d="M6 0v8.635L9.708 11 8.52 6.87 12 4.202l-4.443-.187L6 0Z" fill-opacity="0.4" fill="{{ settings.product_rating_color }}"/>
+    </svg>
+
+  {%- when 'star-rating-empty' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 12 }}" class="{{ class | strip }}" viewBox="0 0 12 11">
+      <path d="M6 0v8.635L2.292 11 3.48 6.87 0 4.202l4.443-.187L6 0Zm0 0v8.635L9.708 11 8.52 6.87 12 4.202l-4.443-.187L6 0Z" fill-opacity="0.4" fill="{{ settings.product_rating_color }}"/>
+    </svg>
+
+  {%- when 'zoom' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 14 }}" class="{{ class | strip }}" viewBox="0 0 14 14">
+      <path d="M9.432 9.432a4.94 4.94 0 1 1-6.985-6.985 4.94 4.94 0 0 1 6.985 6.985Zm0 0L13 13" fill="none" stroke="currentColor" stroke-linecap="square"/>
+      <path d="M6 3.5V6m0 2.5V6m0 0H3.5h5" fill="none" stroke="currentColor" />
+    </svg>
+  
+  {%- when 'hamburger' -%}
+    <svg aria-hidden="true" fill="none" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M1 19h22M1 12h22M1 5h22" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="square"/>
+    </svg>
+
+  {%- when 'account' -%}
+    <svg aria-hidden="true" fill="none" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-miterlimit="10"/>
+    </svg>
+
+  {%- when 'search' -%}
+    <svg aria-hidden="true" fill="none" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M10.364 3a7.364 7.364 0 1 0 0 14.727 7.364 7.364 0 0 0 0-14.727Z" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-miterlimit="10"/>
+      <path d="M15.857 15.858 21 21.001" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-miterlimit="10" stroke-linecap="round"/>
+    </svg>
+
+  {%- when 'cart' -%}
+    <svg aria-hidden="true" fill="none" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      {%- case settings.cart_icon -%}
+        {%- when 'shopping_bag' -%}
+          <path d="M4.75 8.25A.75.75 0 0 0 4 9L3 19.125c0 1.418 1.207 2.625 2.625 2.625h12.75c1.418 0 2.625-1.149 2.625-2.566L20 9a.75.75 0 0 0-.75-.75H4.75Zm2.75 0v-1.5a4.5 4.5 0 0 1 4.5-4.5v0a4.5 4.5 0 0 1 4.5 4.5v1.5" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+
+        {%- when 'shopping_bag_sharp' -%}
+          <path d="M21.5 21.5v-15h-19v15h19ZM8 6V5a4 4 0 1 1 8 0v1" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}"/>
+
+        {%- when 'shopping_cart' -%}
+          <path d="M10 7h13l-4 9H7.5L5 3H1" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9" cy="20" r="1" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="17" cy="20" r="1" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+
+        {%- when 'tote_bag' -%}
+          <path d="M2 10h20l-4 11H6L2 10Zm14-3a4 4 0 0 0-8 0" stroke="currentColor" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" stroke-linecap="round" stroke-linejoin="round"/>
+      {%- endcase -%}
+    </svg>
+
+  {%- comment -%} PICTO (SHOP CATEGORY) {%- endcomment -%}
+  
+  {%- when 'picto-award-gift' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M15.75 23.238a3 3 0 0 0-3-3H9a3 3 0 0 0-3-3H.75v6h15Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 20.238h3m2.25-3H21a.75.75 0 0 0 .75-.75v-6.75m-13.5 0v4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M6.75 6.738a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.75.75h-15a.75.75 0 0 1-.75-.75v-2.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15 17.238V5.988" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M19.265 3.867a11.855 11.855 0 0 1-4.242 2.121 11.856 11.856 0 0 1 2.121-4.242C18.463.428 19.21.63 19.8 1.216c.59.586.784 1.333-.535 2.651Zm-8.531 0c1.257.985 2.7 1.707 4.242 2.121a11.838 11.838 0 0 0-2.121-4.242C11.537.428 10.79.63 10.2 1.216c-.59.586-.784 1.333.534 2.651Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-bag-handle' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="m21.2 12.075 1.16 4.89a5.123 5.123 0 0 1-5.016 6.285H6.655a5.123 5.123 0 0 1-5.016-6.285l1.161-4.89" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.75 14.25H6.583a4.289 4.289 0 0 1-4.333-4.243V6.75a1.5 1.5 0 0 1 1.5-1.5h16.5a1.5 1.5 0 0 1 1.5 1.5v3.257a4.29 4.29 0 0 1-4.333 4.243H14.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 16.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5ZM10.25.75h3.5a2 2 0 0 1 2 2v2.5h-7.5v-2.5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-building' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M20.25 4.6v17.72M3.75 4.6h16.5M3.75 22.32V4.6m16.5 17.72H3.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M20.25 4.6H3.75l1.5-2.88h13.5l1.5 2.88v0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M.75 22.32h22.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M14.25 20.16c0-1.193-1.007-2.16-2.25-2.16s-2.25.967-2.25 2.16v2.16h4.5v-2.16Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.5 9.12c.207 0 .375.161.375.36m-.75 0c0-.199.168-.36.375-.36m0 .72a.368.368 0 0 1-.375-.36m.75 0c0 .199-.168.36-.375.36m0 3.6c.207 0 .375.161.375.36m-.75 0c0-.199.168-.36.375-.36m0 .72a.368.368 0 0 1-.375-.36m.75 0c0 .199-.168.36-.375.36M12 9.12c.207 0 .375.161.375.36m-.75 0c0-.199.168-.36.375-.36m0 .72a.368.368 0 0 1-.375-.36m.75 0c0 .199-.168.36-.375.36m0 3.6c.207 0 .375.161.375.36m-.75 0c0-.199.168-.36.375-.36m0 .72a.368.368 0 0 1-.375-.36m.75 0c0 .199-.168.36-.375.36m4.5-5.04c.207 0 .375.161.375.36m-.75 0c0-.199.168-.36.375-.36m0 .72a.368.368 0 0 1-.375-.36m.75 0c0 .199-.168.36-.375.36m0 3.6c.207 0 .375.161.375.36m-.75 0c0-.199.168-.36.375-.36m0 .72a.368.368 0 0 1-.375-.36m.75 0c0 .199-.168.36-.375.36" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-coupon' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M1.061 2.56v6.257a3 3 0 0 0 .878 2.121L13.5 22.5a1.5 1.5 0 0 0 2.121 0l6.879-6.88a1.5 1.5 0 0 0 0-2.121L10.939 1.938a3 3 0 0 0-2.121-.878H2.561a1.5 1.5 0 0 0-1.5 1.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M6.311 7.81a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-gift' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M21.75 11.25H2.25v10.5a1.5 1.5 0 0 0 1.5 1.5h16.5a1.5 1.5 0 0 0 1.5-1.5v-10.5Zm0-4.5H2.25a1.5 1.5 0 0 0-1.5 1.5v2.25c0 .414.336.75.75.75h21a.75.75 0 0 0 .75-.75V8.25a1.5 1.5 0 0 0-1.5-1.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M11.25 6.75c-3.314 0-6.75-2.686-6.75-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.5.75c3.314 0 6.75 2.686 6.75 6m1.5 0c3.314 0 6.75-2.686 6.75-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19.5.75c-3.314 0-6.75 2.686-6.75 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M9.75 6.75h4.5v16.5h-4.5V6.75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-info' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M14.25 16.5h-.75A1.5 1.5 0 0 1 12 15v-3.75a.75.75 0 0 0-.75-.75h-.75m1.125-3.75a.375.375 0 1 0 0 .75.375.375 0 0 0 0-.75v0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 23.25c6.213 0 11.25-5.037 11.25-11.25S18.213.75 12 .75.75 5.787.75 12 5.787 23.25 12 23.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-like' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M5.25 21.751a6 6 0 0 1 1.558.23l3.634 1.038a6 6 0 0 0 1.647.231h4.885a6 6 0 0 0 5.97-5.4l.3-5.1a4.5 4.5 0 0 0-3.4-4.594l-1.455-.318a1.5 1.5 0 0 1-1.139-1.456V3a2.25 2.25 0 0 0-4.5 0v1.554a7.5 7.5 0 0 1-7.5 7.5v9.697ZM.75 9.75h4.5v13.5H.75V9.75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-love' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="m12 21.844-9.588-10a5.672 5.672 0 0 1-1.063-6.551v0a5.673 5.673 0 0 1 9.085-1.474L12 5.384l1.566-1.565a5.673 5.673 0 0 1 9.085 1.474v0a5.673 5.673 0 0 1-1.062 6.548L12 21.844Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-percent' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 23.25c6.213 0 11.25-5.037 11.25-11.25S18.213.75 12 .75.75 5.787.75 12 5.787 23.25 12 23.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m8.25 15.75 7.5-7.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M9 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm6 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-star' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="m12.695 1.676 3.198 6.334 6.154.61a.77.77 0 0 1 .477 1.313l-5.064 5.02 1.878 6.82a.777.777 0 0 1-1.1.894l-6.24-3.09-6.23 3.086a.777.777 0 0 1-1.1-.893l1.878-6.821-5.068-5.02a.77.77 0 0 1 .478-1.313l6.154-.61 3.192-6.33a.783.783 0 0 1 1.393 0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} PICTO (SHIPPING CATEGORY) {%- endcomment -%}
+
+  {%- when 'picto-box' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M.75 5.25 12 9.75l11.25-4.5L12 .75.75 5.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M.75 5.25v13.5L12 23.25V9.75L.75 5.25v0Zm22.5 0v13.5L12 23.25V9.75l11.25-4.5v0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m18.187 7.275-11.25-4.5M20.625 16.5l-1.875.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-delivery-truck' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M23.25 13.5V6a1.5 1.5 0 0 0-1.5-1.5h-12A1.5 1.5 0 0 0 8.25 6v6m0 0V6h-3a4.5 4.5 0 0 0-4.5 4.5v6a1.5 1.5 0 0 0 1.5 1.5H3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M.75 12h3a1.5 1.5 0 0 0 1.5-1.5V6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M7.5 19.5a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Zm12 0a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 18h3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-pin' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 12a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 .75a7.5 7.5 0 0 1 7.5 7.5c0 3.407-5.074 11.95-6.875 14.665a.75.75 0 0 1-1.25 0C9.574 20.2 4.5 11.657 4.5 8.25A7.5 7.5 0 0 1 12 .75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-plane' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="m20.055 20.198.654-.654c.36-.36.502-.885.373-1.378l-2.326-8.837 3.075-3.075a2.972 2.972 0 0 0 .422-3.794 2.867 2.867 0 0 0-4.369-.37l-3.183 3.185L5.867 2.95a1.434 1.434 0 0 0-1.38.373l-.653.654A1.434 1.434 0 0 0 4.11 6.22l6.03 3.618-4.589 5.2-1.434.02a1.434 1.434 0 0 0-1.225.37L1.46 16.74a.716.716 0 0 0 .225 1.165l2.767 1.56 1.816 2.864a.718.718 0 0 0 1.166.224l1.251-1.193c.354-.333.515-.822.428-1.3l.023-1.438 5.058-4.73 3.618 6.03a1.434 1.434 0 0 0 2.243.276Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-return' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="m1.25 15.08 2.207-3.384 3.385 2.206" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13.13 2.5a9.525 9.525 0 1 1 0 19.049 9.68 9.68 0 0 1-9.673-9.853" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} PICTO (PAYMENT AND SECURITY CATEGORY) {%- endcomment -%}
+
+  {%- when 'picto-credit-card' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M.75 5.25a1.5 1.5 0 0 1 1.5-1.5h19.5a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5H2.25a1.5 1.5 0 0 1-1.5-1.5V5.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M.75 8.25h22.5m-18 4.5h8.25m-8.25 3h5.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-lock' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M3.75 11.25a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v10.5a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-10.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6.75 9.75V6a5.25 5.25 0 0 1 10.5 0v3.75M12 15v3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-money' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M4.5 7.875a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75m15 7.5a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M.75 6a1.5 1.5 0 0 1 1.5-1.5h19.5a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H2.25A1.5 1.5 0 0 1 .75 18V6Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-secure-profile' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M23.25 9.937A13.5 13.5 0 0 1 12 23.25 13.5 13.5 0 0 1 .75 9.937V2.25a1.5 1.5 0 0 1 1.5-1.5h19.5a1.5 1.5 0 0 1 1.5 1.5v7.687Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 12a3.375 3.375 0 1 0 0-6.75A3.375 3.375 0 0 0 12 12Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17.387 16.75a6.032 6.032 0 0 0-10.774 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-shield' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M12 1.254V22.75M21 11H3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M3 4.285v7.274c0 4.708 2.284 8.928 6.882 10.618l1.041.382a3.13 3.13 0 0 0 2.154 0l1.041-.382C18.716 20.487 21 16.267 21 11.559V4.285a1.418 1.418 0 0 0-.868-1.301A18.248 18.248 0 0 0 12 1.254a18.248 18.248 0 0 0-8.132 1.73A1.418 1.418 0 0 0 3 4.285Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} PICTO (ECOLOGY CATEGORY) {%- endcomment -%}
+
+  {%- when 'picto-earth' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 23.25c6.213 0 11.25-5.037 11.25-11.25S18.213.75 12 .75.75 5.787.75 12 5.787 23.25 12 23.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M7.079 15.75a1.5 1.5 0 0 0 1.455-1.864l-.75-3A1.5 1.5 0 0 0 6.329 9.75H.976a11.246 11.246 0 0 0 4.016 11.042L6 15.75h1.079Zm13.906-10.5h-4.064a1.5 1.5 0 0 0-1.455 1.136l-.75 3a1.5 1.5 0 0 0 1.455 1.864h1.579l.791 4.75a1.5 1.5 0 0 0 1.48 1.253h1.925a11.2 11.2 0 0 0-.961-12V5.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-leaf' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M10.075 20.383a7.197 7.197 0 0 1-7.196-7.197c0-10.436 12.56-5.08 18.605-10.097a.445.445 0 0 1 .458-.046c.151.063.26.2.287.361 1.846 10.81-6.112 16.979-12.154 16.979Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.954 11.262a23.872 23.872 0 0 0-8.226 4.095L1 18.539" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-recycle' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="m18.344 9.2-3.8-6.682a3 3 0 0 0-5.2 0l-1.058 1.83M11.942 20.1H19.5a3 3 0 0 0 2.6-4.5l-1.3-2.25M5.594 8.848l-3.8 6.75a3 3 0 0 0 2.6 4.5h3.052" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m14.942 17.098-3 3 3 3m4.5-18-1.098 4.098-4.098-1.098M1.496 9.946l4.098-1.098 1.098 4.098" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-tree' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="m9.317 2.665-4.5 9.573c-1 2.3.453 5.012 2.683 5.012h9c2.23 0 3.681-2.71 2.683-5.012l-4.5-9.573a2.837 2.837 0 0 0-5.366 0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 9.75v13.5M12 21a3.543 3.543 0 0 0 3.75-3.75m-6.75-6a1.989 1.989 0 0 0 2.25 2.25H12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} PICTO (TECH CATEGORY) {%- endcomment -%}
+
+  {%- when 'picto-at-sign' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17.25 12v2.25a3 3 0 1 0 6 0V12a11.25 11.25 0 1 0-4.5 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-bluetooth' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M6 17 18.5 7l-6.25-5v20l6.25-5L6 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-camera' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M14.25 18a5.25 5.25 0 1 0 0-10.5 5.25 5.25 0 0 0 0 10.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="m19.5 6-1.085-2.171A1.5 1.5 0 0 0 17.073 3h-5.646a1.5 1.5 0 0 0-1.342.829L9 6H2.25a1.5 1.5 0 0 0-1.5 1.5v12a1.5 1.5 0 0 0 1.5 1.5h19.5a1.5 1.5 0 0 0 1.5-1.5v-12a1.5 1.5 0 0 0-1.5-1.5H19.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.125 9a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75M5.25 6V4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-printer' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M5.25 17.249h-3a1.5 1.5 0 0 1-1.5-1.5v-7.5a1.5 1.5 0 0 1 1.5-1.5h19.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-3m-15-7.5h1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M5.25 12.749h13.5v10.5H5.25v-10.5Zm13.5-6H5.25v-4.5a1.5 1.5 0 0 1 1.5-1.5h10.5a1.5 1.5 0 0 1 1.5 1.5v4.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.25 15.749h7.5m-7.5 3h5.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-smart-watch' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M14.25 23.25h-4.5a1.5 1.5 0 0 1-1.5-1.5v-3h7.5v3a1.5 1.5 0 0 1-1.5 1.5ZM9.75.75h4.5a1.5 1.5 0 0 1 1.5 1.5v3h-7.5v-3a1.5 1.5 0 0 1 1.5-1.5Zm-4.5 7.5a3 3 0 0 1 3-3h7.5a3 3 0 0 1 3 3v7.5a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-wifi' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 12.569a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 12.569v9.684m7.286-3.363a11.249 11.249 0 0 0 0-17.143" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.371 15.462a6.75 6.75 0 0 0 0-10.286M4.714 18.89a11.249 11.249 0 0 1 0-17.143" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.63 15.462a6.749 6.749 0 0 1 0-10.286" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} PICTO (COMMUNICATION CATEGORY) {%- endcomment -%}
+
+  {%- when 'picto-avatar' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 15a5.25 5.25 0 1 0 0-10.5A5.25 5.25 0 0 0 12 15Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18.913 20.876a9.746 9.746 0 0 0-13.826 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 23.25c6.213 0 11.25-5.037 11.25-11.25S18.213.75 12 .75.75 5.787.75 12 5.787 23.25 12 23.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-chat' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M11.25 18.75a1.5 1.5 0 0 1-1.5-1.5v-7.5a1.5 1.5 0 0 1 1.5-1.5h10.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-1.5v4.5l-4.5-4.5h-4.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m6.75 12.75-3 3v-4.5h-1.5a1.5 1.5 0 0 1-1.5-1.5v-7.5a1.5 1.5 0 0 1 1.5-1.5h10.5a1.5 1.5 0 0 1 1.5 1.5v3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-calendar' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M1.752 5.25a1.5 1.5 0 0 1 1.5-1.5h17.5a1.5 1.5 0 0 1 1.5 1.5v16.5a1.5 1.5 0 0 1-1.5 1.5h-17.5a1.5 1.5 0 0 1-1.5-1.5V5.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1.752 9.75h20.5M6.752 6V.75M17.252 6V.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-comment' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M21.75 18.75h-10.5l-6 4.5v-4.5h-3a1.5 1.5 0 0 1-1.5-1.5v-15a1.5 1.5 0 0 1 1.5-1.5h19.5a1.5 1.5 0 0 1 1.5 1.5v15a1.5 1.5 0 0 1-1.5 1.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5.25 7.5h13.5M5.25 12h10.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-customer-support' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M12.75 15.75h3v4.5l4.5-4.5h1.494c.832 0 1.506-.674 1.506-1.506V2.25a1.5 1.5 0 0 0-1.5-1.5h-12a1.5 1.5 0 0 0-1.5 1.5v4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19.875 7.875a.375.375 0 1 0 0 .75.375.375 0 0 0 0-.75m-7.5 0a.375.375 0 1 0 0 .75.375.375 0 0 0 0-.75m3.75 0a.375.375 0 1 0 0 .75.375.375 0 0 0 0-.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M6.75 16.5a3.375 3.375 0 1 0 0-6.75 3.375 3.375 0 0 0 0 6.75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.75 23.25a6.054 6.054 0 0 0-12 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-envelope' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M1.5 6.25A1.5 1.5 0 0 1 3 4.75h18a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H3a1.5 1.5 0 0 1-1.5-1.5v-12Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m22.161 5.3-8.144 6.264a3.308 3.308 0 0 1-4.034 0L1.839 5.3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-happy-face' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 23.25c6.213 0 11.25-5.037 11.25-11.25S18.213.75 12 .75.75 5.787.75 12 5.787 23.25 12 23.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.25 8.625a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75m7.5 0a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75M18.048 15a6.752 6.752 0 0 1-12.1 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-mailbox' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M12 18.75v4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M21 8.25H6a3 3 0 0 0-3 3V18c0 .414.336.75.75.75H21V8.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15 11.25V.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M15 5.25h-4.5A1.5 1.5 0 0 1 9 3.75v-1.5a1.5 1.5 0 0 1 1.5-1.5H15v4.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-mobile-phone' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M5.251 3.75a3 3 0 0 1 3-3h7.5a3 3 0 0 1 3 3v16.5a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3V3.75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5.251 18.75h13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-operator' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M8.76 2.549a8.989 8.989 0 0 0-2.251 16.5v4.2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M11.01 15a3.75 3.75 0 1 1 0-7.5 3.75 3.75 0 0 1 0 7.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13.26 8.25V1.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75v6.75m11.249 7.511.936-.234a1.5 1.5 0 0 0 .884-2.287l-1.82-2.729v-.75c0-3.542-2.868-6.511-6.749-7.3m2.249 20.789v-2.239l1.007.167c.414.07.838.052 1.244-.053m-6.75-9.875a7.5 7.5 0 0 0 7.5 7.5h1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-phone' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="m14.62 20.853.01.006a4.5 4.5 0 0 0 5.6-.614l.63-.63a1.5 1.5 0 0 0 0-2.121l-2.651-2.652a1.5 1.5 0 0 0-2.122 0v0a1.5 1.5 0 0 1-2.121 0L9.722 10.6a1.5 1.5 0 0 1 0-2.122v0a1.5 1.5 0 0 0 0-2.121L7.07 3.705a1.5 1.5 0 0 0-2.121 0l-.63.63a4.5 4.5 0 0 0-.614 5.6l.006.01a40.62 40.62 0 0 0 10.91 10.908v0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-question' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M21.75 18.75h-10.5l-6 4.5v-4.5h-3a1.5 1.5 0 0 1-1.5-1.5v-15a1.5 1.5 0 0 1 1.5-1.5h19.5a1.5 1.5 0 0 1 1.5 1.5v15a1.5 1.5 0 0 1-1.5 1.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.75 6.75a3 3 0 1 1 4 2.829 1.5 1.5 0 0 0-1 1.414v.257m0 3a.375.375 0 1 0 0 .75.375.375 0 0 0 0-.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-send' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M2.05 10.387a1.487 1.487 0 0 1-.069-2.841L22.05 1a.751.751 0 0 1 .949.943l-6.541 20.081a1.486 1.486 0 0 1-2.841-.07l-2.246-9.331-9.322-2.236Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22.815 1.18 11.372 12.623" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-user' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M16.592 8.01c-.205 2.758-2.296 5.008-4.592 5.008s-4.391-2.25-4.592-5.009C7.199 5.14 9.234 3 12 3c2.765 0 4.8 2.192 4.592 5.01Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 21.364c.853-4.728 5.46-7.232 10-7.232s9.147 2.504 10 7.232" stroke="currentColor" stroke-miterlimit="10"/>
+    </svg>
+
+  {%- comment -%} PICTO (FOOD AND DRINK CATEGORY) {%- endcomment -%}
+  {%- when 'picto-burger' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M6.375 7.126a.375.375 0 1 1 0 .752.375.375 0 0 1 0-.753M10.4 8.251a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75m7.225 0a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75m-3.473-1.5a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M.75 13.501A2.25 2.25 0 0 1 3 11.251h18a2.25 2.25 0 0 1 2.25 2.25v0a2.25 2.25 0 0 1-2.25 2.25H3a2.25 2.25 0 0 1-2.25-2.25v0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21.75 11.38V9.94a6.189 6.189 0 0 0-6.19-6.189H8.44A6.189 6.189 0 0 0 2.25 9.94v1.44m19.5 4.243v1.628a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3v-1.628" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-beer' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M17.25 9.75h2.1a3.759 3.759 0 0 1 3.9 3.6v1.8a3.759 3.759 0 0 1-3.9 3.6h-2.1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17.25 8.256v13.6a1.372 1.372 0 0 1-1.35 1.394H5.1a1.373 1.373 0 0 1-1.35-1.393v-12.4m4.5 5.442v4.178m4.5-6.267v6.267" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M19.365 5.1a3.43 3.43 0 0 0-5.2-1.9 4.047 4.047 0 0 0-7.584.4 3.431 3.431 0 1 0-2.829 5.856h.006A3.37 3.37 0 0 0 7.39 12.74a3.472 3.472 0 0 0 2.69-1.829 3.21 3.21 0 0 0 .41-1.3 1.484 1.484 0 0 1 1.488-1.359c1.743 0 3.705.007 5.278 0A2.213 2.213 0 0 0 19.5 6.21a3.531 3.531 0 0 0-.135-1.11Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-coffee' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M3.75 3.75h12a1.5 1.5 0 0 1 1.5 1.5v7.5a7.5 7.5 0 0 1-7.5 7.5v0a7.5 7.5 0 0 1-7.5-7.5v-7.5a1.5 1.5 0 0 1 1.5-1.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M.75 20.25h22.5m-6-15h1.5a4.513 4.513 0 0 1 4.5 4.5v0a4.513 4.513 0 0 1-4.5 4.5H17.1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-pizza' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M22.284 6.747a17.806 17.806 0 0 0-11.951-4.5A2.083 2.083 0 0 0 8.25 4.334a2.043 2.043 0 0 0 1.968 2.083c1.059 0 6.276.678 9.314 3.375" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.262 6.149.75 18.917l19.577-8.512" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m.75 18.917.75 2.834 21.75-9V8.5a2.084 2.084 0 1 0-2.921 1.908m-7.912-.657-2.5.833m-2.5 3.333v1.667" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-bottle' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M14.25 3.875V2.25a1.5 1.5 0 0 0-1.5-1.5h-1.5a1.5 1.5 0 0 0-1.5 1.5v1.625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M10.939 3.75A5.689 5.689 0 0 0 5.25 9.439c0 .2.08.39.22.531l.75.75a.749.749 0 0 1 0 1.06l-.75.75a.75.75 0 0 0-.22.531v2.378c0 .2.08.39.22.531l.75.75a.749.749 0 0 1 0 1.06l-.75.75a.75.75 0 0 0-.22.531v2.689a1.5 1.5 0 0 0 1.5 1.5h10.5a1.5 1.5 0 0 0 1.5-1.5v-2.689c0-.2-.08-.39-.22-.531l-.75-.75a.75.75 0 0 1 0-1.06l.75-.75c.14-.14.22-.332.22-.531v-2.378c0-.2-.08-.39-.22-.531l-.75-.75a.75.75 0 0 1 0-1.06l.75-.75c.14-.14.22-.332.22-.531a5.689 5.689 0 0 0-5.689-5.689h-2.122Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6.439 11.25h11.122m-11.122 6h11.122" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} PICTO (OTHER CATEGORY) {%- endcomment -%}
+
+  {%- when 'picto-document' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M7.5 9.51h9m-9 3.75h9m-9 3.75h9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M15.75 4.51h3.75a1.5 1.5 0 0 1 1.5 1.5V21a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 21V6.01a1.5 1.5 0 0 1 1.5-1.5h3.75a3.75 3.75 0 1 1 7.5 0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 3.76a.375.375 0 1 1 0 .75.375.375 0 0 1 0-.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-error' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 22.75c5.937 0 10.75-4.813 10.75-10.75S17.937 1.25 12 1.25 1.25 6.063 1.25 12 6.063 22.75 12 22.75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m7.7 16.3 8.599-8.6m.001 8.6L7.7 7.7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-file' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M22.5 21.75a1.5 1.5 0 0 1-1.5 1.5H3a1.5 1.5 0 0 1-1.5-1.5V2.25A1.5 1.5 0 0 1 3 .75h15.045a1.5 1.5 0 0 1 1.048.426l2.954 2.883c.29.282.453.67.453 1.074V21.75Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6.045 8.25h12m-12 4.5h12m-12 4.5h6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-jewelry' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M19.237 3.225a1.5 1.5 0 0 0-1.2-.6h-12a1.5 1.5 0 0 0-1.2.6L1.5 7.676a1.5 1.5 0 0 0 .048 1.86l9.338 11.3a1.5 1.5 0 0 0 2.3 0l9.338-11.3a1.5 1.5 0 0 0 .048-1.86l-3.335-4.451Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m5.349 2.792 6.688 18.583m6.687-18.583-6.687 18.583M1.198 8.625h21.673m-15.334 0 4.5-6 4.5 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-mask' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M5.649 17.143V7.714H18.35v9.429c-1.143.857-3.78 2.571-6.351 2.571S6.792 18 5.649 17.143Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m18.351 17.143 2.987-2.988c2.49-2.49.522-6.734-2.987-6.44M5.65 17.142l-2.987-2.988c-2.49-2.49-.523-6.732 2.987-6.44v9.428ZM11.143 12h1.714" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-music' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M4.5 23.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Zm15-4.5a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.25 19.5V6.719a3 3 0 0 1 2.05-2.846L21.348.805a1.5 1.5 0 0 1 1.9 1.445V15M8.25 8.719l15-4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-not-allowed' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 23.25c6.213 0 11.25-5.037 11.25-11.25S18.213.75 12 .75.75 5.787.75 12 5.787 23.25 12 23.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m4.045 19.955 15.91-15.91" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-target' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="m11.016 11.859 4.167-4.167" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="m15.183 7.692.568-3.75L18.999.75l.502 2.624 2.624.502-3.192 3.248-3.75.568v0Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21.055 9.513A9.75 9.75 0 1 1 12.614 2.3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.722 10.737a5.25 5.25 0 1 1-5.1-3.987m-5.106 13.5-.75 3m11.25-3 .75 3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-timer' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M12 23.25a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m18 7.5 1.875-1.875M19.5 5.25l.75.75M12 5.25V.75m2.25 0h-4.5M12 15l-3.75-4.151" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'picto-success' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" stroke-width="{{ stroke_width | default: settings.icon_stroke_width }}" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M6 13.223 8.45 16.7a1.049 1.049 0 0 0 1.707.051L18 6.828" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      <path clip-rule="evenodd" d="M12 23.249c6.213 0 11.25-5.037 11.25-11.25S18.213.749 12 .749.75 5.786.75 11.999 5.787 23.249 12 23.249Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- comment -%} SOCIAL MEDIA {%- endcomment -%}
+
+  {%- when 'facebook' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M10.183 21.85v-8.868H7.2V9.526h2.983V6.982a4.17 4.17 0 0 1 4.44-4.572 22.33 22.33 0 0 1 2.667.144v3.084h-1.83a1.44 1.44 0 0 0-1.713 1.68v2.208h3.423l-.447 3.456h-2.97v8.868h-3.57Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'instagram' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.4c-2.607 0-2.934.011-3.958.058-1.022.046-1.72.209-2.33.446a4.705 4.705 0 0 0-1.7 1.107 4.706 4.706 0 0 0-1.108 1.7c-.237.611-.4 1.31-.446 2.331C2.41 9.066 2.4 9.392 2.4 12c0 2.607.011 2.934.058 3.958.046 1.022.209 1.72.446 2.33a4.706 4.706 0 0 0 1.107 1.7c.534.535 1.07.863 1.7 1.108.611.237 1.309.4 2.33.446 1.025.047 1.352.058 3.959.058s2.934-.011 3.958-.058c1.022-.046 1.72-.209 2.33-.446a4.706 4.706 0 0 0 1.7-1.107 4.706 4.706 0 0 0 1.108-1.7c.237-.611.4-1.31.446-2.33.047-1.025.058-1.352.058-3.959s-.011-2.934-.058-3.958c-.047-1.022-.209-1.72-.446-2.33a4.706 4.706 0 0 0-1.107-1.7 4.705 4.705 0 0 0-1.7-1.108c-.611-.237-1.31-.4-2.331-.446C14.934 2.41 14.608 2.4 12 2.4Zm0 1.73c2.563 0 2.867.01 3.88.056.935.042 1.443.199 1.782.33.448.174.768.382 1.104.718.336.336.544.656.718 1.104.131.338.287.847.33 1.783.046 1.012.056 1.316.056 3.879 0 2.563-.01 2.867-.056 3.88-.043.935-.199 1.444-.33 1.782a2.974 2.974 0 0 1-.719 1.104 2.974 2.974 0 0 1-1.103.718c-.339.131-.847.288-1.783.33-1.012.046-1.316.056-3.88.056-2.563 0-2.866-.01-3.878-.056-.936-.042-1.445-.199-1.783-.33a2.974 2.974 0 0 1-1.104-.718 2.974 2.974 0 0 1-.718-1.104c-.131-.338-.288-.847-.33-1.783-.047-1.012-.056-1.316-.056-3.879 0-2.563.01-2.867.056-3.88.042-.935.199-1.443.33-1.782.174-.448.382-.768.718-1.104a2.974 2.974 0 0 1 1.104-.718c.338-.131.847-.288 1.783-.33C9.133 4.14 9.437 4.13 12 4.13Zm0 11.07a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4Zm0-8.13a4.93 4.93 0 1 0 0 9.86 4.93 4.93 0 0 0 0-9.86Zm6.276-.194a1.152 1.152 0 1 1-2.304 0 1.152 1.152 0 0 1 2.304 0Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'pinterest' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M11.765 2.401c3.59-.054 5.837 1.4 6.895 3.95.349.842.722 2.39.442 3.675-.112.512-.144 1.048-.295 1.53-.308.983-.708 1.853-1.238 2.603-.72 1.02-1.81 1.706-3.182 2.052-1.212.305-2.328-.152-2.976-.643-.206-.156-.483-.36-.56-.643h-.029c-.046.515-.244 1.062-.383 1.531-.193.65-.23 1.321-.472 1.929a12.345 12.345 0 0 1-.942 1.868c-.184.302-.692 1.335-1.061 1.347-.04-.078-.057-.108-.06-.245-.118-.19-.035-.508-.087-.766-.082-.4-.145-1.123-.06-1.53v-.643c.096-.442.092-.894.207-1.317.25-.92.39-1.895.648-2.848.249-.915.477-1.916.678-2.847.045-.21-.21-.815-.265-1.041-.174-.713-.042-1.7.176-2.236.275-.674 1.08-1.703 2.122-1.439.838.212 1.371 1.118 1.09 2.266-.295 1.205-.677 2.284-.943 3.49-.068.311.05.641.118.827.248.672 1 1.324 2.004 1.072 1.52-.383 2.193-1.76 2.652-3.246.124-.402.109-.781.206-1.225.204-.935.118-2.331-.177-3.061-.472-1.17-1.353-1.92-2.563-2.328L12.707 4.3c-.56-.128-1.626.064-2.004.183-1.69.535-2.737 1.427-3.388 3.032-.222.546-.344 1.1-.383 1.868l-.03.276c.13.686.144 1.14.413 1.653.132.252.447.451.5.765.032.185-.104.464-.147.613-.065.224-.041.48-.147.673-.192.349-.714.087-.943-.061-1.192-.77-2.175-2.995-1.62-5.144.085-.332.09-.62.206-.919.723-1.844 1.802-2.978 3.359-3.95.583-.364 1.37-.544 2.092-.734l1.149-.154Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'threads' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M16.854 10.899a6.682 6.682 0 0 0-.252-.114c-.148-2.731-1.64-4.295-4.146-4.31h-.034c-1.498 0-2.745.64-3.512 1.803l1.378.945c.573-.87 1.473-1.055 2.135-1.055h.023c.825.006 1.447.246 1.85.713.293.34.49.812.587 1.405a10.541 10.541 0 0 0-2.368-.114C10.131 10.31 8.6 11.7 8.704 13.63c.052.98.54 1.822 1.373 2.372.705.465 1.613.693 2.556.641 1.246-.068 2.223-.543 2.905-1.412.518-.66.845-1.516.99-2.593.594.358 1.034.83 1.277 1.396.413.964.437 2.547-.855 3.838-1.132 1.13-2.492 1.62-4.549 1.635-2.28-.017-4.006-.748-5.127-2.174-1.05-1.335-1.593-3.264-1.613-5.732.02-2.468.563-4.397 1.613-5.732C8.395 4.442 10.12 3.711 12.4 3.694c2.298.017 4.053.752 5.217 2.185.571.702 1.002 1.586 1.286 2.616l1.614-.43c-.344-1.269-.885-2.361-1.622-3.268C17.404 2.961 15.22 2.02 12.406 2h-.01c-2.808.02-4.967.964-6.417 2.808C4.689 6.448 4.022 8.732 4 11.593v.014c.022 2.861.688 5.144 1.979 6.785 1.45 1.844 3.61 2.789 6.417 2.808h.01c2.497-.017 4.256-.67 5.706-2.119 1.896-1.894 1.839-4.27 1.214-5.727-.448-1.045-1.303-1.894-2.472-2.455Zm-4.31 4.052c-1.044.058-2.129-.41-2.182-1.414-.04-.744.53-1.574 2.246-1.673a9.52 9.52 0 0 1 .58-.017c.623 0 1.206.06 1.736.176-.198 2.47-1.358 2.872-2.38 2.928Z" fill="currentColor" />
+    </svg>
+
+  {%- when 'twitter' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M16.94 4h2.715l-5.93 6.777L20.7 20h-5.462l-4.278-5.593L6.065 20H3.35l6.342-7.25L3 4h5.6l3.868 5.113L16.94 4Zm-.952 14.375h1.504L7.784 5.54H6.17l9.818 12.836Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'linkedin' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M7.349 5.478a1.875 1.875 0 1 0-3.749 0 1.875 1.875 0 1 0 3.749 0ZM7.092 19.2H3.857V8.78h3.235V19.2ZM12.22 8.78H9.121V19.2h3.228v-5.154c0-1.36.257-2.676 1.94-2.676 1.658 0 1.68 1.554 1.68 2.763V19.2H19.2v-5.715c0-2.806-.605-4.963-3.877-4.963-1.573 0-2.629.863-3.06 1.683h-.044V8.78Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'snapchat' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.121 21.6c-.05 0-.098-.001-.147-.004a1.3 1.3 0 0 1-.096.004c-1.137 0-1.867-.516-2.573-1.014-.488-.344-.947-.669-1.49-.759a4.816 4.816 0 0 0-.782-.066c-.458 0-.82.07-1.083.122-.16.032-.3.059-.404.059-.11 0-.23-.024-.281-.2a6.305 6.305 0 0 1-.109-.445c-.08-.37-.138-.596-.292-.62-1.805-.278-2.32-.657-2.436-.927a.344.344 0 0 1-.028-.115.203.203 0 0 1 .17-.212c2.773-.456 4.017-3.287 4.069-3.407l.004-.01c.17-.343.203-.642.1-.886-.191-.448-.812-.645-1.223-.775-.1-.032-.196-.062-.27-.091-.82-.324-.889-.656-.857-.826.055-.289.441-.49.754-.49a.53.53 0 0 1 .224.045c.369.173.701.26.988.26.396 0 .57-.166.59-.188-.01-.188-.022-.383-.035-.585-.082-1.31-.185-2.937.23-3.866 1.243-2.784 3.88-3 4.658-3l.341-.004h.046c.78 0 3.423.217 4.667 3.002.415.93.312 2.558.23 3.867l-.004.057c-.012.182-.023.36-.032.529.02.02.179.173.538.187.274-.01.587-.098.932-.259a.704.704 0 0 1 .29-.057c.116 0 .234.023.332.064l.006.002c.278.099.46.294.465.497.003.192-.143.48-.863.764-.074.03-.17.06-.27.092-.412.13-1.032.327-1.223.775-.104.244-.07.542.1.886l.004.01c.052.12 1.294 2.95 4.069 3.407a.203.203 0 0 1 .17.212.342.342 0 0 1-.029.116c-.114.267-.63.646-2.435.924-.147.023-.204.215-.292.617-.032.147-.065.29-.11.442-.038.131-.12.193-.258.193h-.022a2.26 2.26 0 0 1-.404-.051 5.394 5.394 0 0 0-1.084-.115c-.254 0-.518.022-.782.066-.542.09-1.001.414-1.488.758-.707.5-1.437 1.015-2.575 1.015Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'tiktok' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M20.027 10.168a5.125 5.125 0 0 1-4.76-2.294v7.893a5.833 5.833 0 1 1-5.834-5.834c.122 0 .241.011.361.019v2.874c-.12-.014-.237-.036-.36-.036a2.977 2.977 0 0 0 0 5.954c1.644 0 3.096-1.295 3.096-2.94L12.56 2.4h2.75a5.122 5.122 0 0 0 4.72 4.573v3.195" fill="currentColor"/>
+    </svg>
+
+  {%- when 'tumblr' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M13.906 20.4c-2.526 0-4.41-1.3-4.41-4.41v-4.98H7.2V8.314c2.527-.657 3.584-2.83 3.706-4.714h2.623v4.277h3.061v3.133h-3.06v4.337c0 1.3.655 1.75 1.7 1.75h1.482V20.4h-2.806Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'vimeo' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M21.518 6.726c.143-.815.14-1.654-.356-2.288-.693-.89-2.167-.922-3.178-.765-.821.127-3.6 1.371-4.547 4.35 1.676-.13 2.554.122 2.393 1.994-.068.783-.457 1.642-.893 2.464-.502.948-1.445 2.81-2.68 1.468-1.114-1.208-1.03-3.518-1.285-5.056-.142-.864-.292-1.94-.57-2.827-.24-.763-.791-1.684-1.465-1.883-.724-.216-1.618.12-2.143.435C5.12 5.615 3.847 7.034 2.4 8.204v.11c.287.278.364.734.786.796.996.149 1.945-.942 2.607.193.403.693.529 1.453.787 2.2.344.996.61 2.08.892 3.224.477 1.939 1.064 4.836 2.715 5.545.843.363 2.11-.122 2.75-.508 1.738-1.043 3.091-2.555 4.25-4.094 2.649-3.64 4.11-7.765 4.331-8.944Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'wechat' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M21.502 19.445C23.026 18.352 24 16.736 24 14.939c0-3.29-3.237-5.959-7.229-5.959s-7.229 2.669-7.229 5.96 3.237 5.96 7.229 5.96c.825 0 1.621-.116 2.36-.327l.212-.032a.77.77 0 0 1 .384.11l1.583.904.139.045a.24.24 0 0 0 .241-.239l-.039-.174-.326-1.202-.025-.152c0-.16.08-.302.202-.388ZM8.675 2.4C3.884 2.4 0 5.602 0 9.552c0 2.155 1.168 4.095 2.997 5.406a.567.567 0 0 1 .243.466l-.03.182-.391 1.443-.047.209c0 .158.13.286.289.286l.168-.053 1.899-1.085a.915.915 0 0 1 .46-.132l.255.038a10.36 10.36 0 0 0 2.832.392l.476-.011a5.474 5.474 0 0 1-.291-1.753c0-3.602 3.542-6.523 7.911-6.523l.471.012c-.653-3.416-4.24-6.03-8.567-6.03Zm5.686 11.587a.959.959 0 0 1-.963-.954c0-.527.431-.954.963-.954.533 0 .964.426.964.954a.959.959 0 0 1-.964.954Zm4.82 0a.959.959 0 0 1-.964-.954c0-.527.431-.954.964-.954.532 0 .963.426.963.954a.959.959 0 0 1-.963.954ZM5.783 8.407a1.15 1.15 0 0 1-1.156-1.143 1.15 1.15 0 0 1 1.156-1.145A1.15 1.15 0 0 1 6.94 7.264a1.15 1.15 0 0 1-1.157 1.143Zm5.783 0a1.15 1.15 0 0 1-1.156-1.143 1.15 1.15 0 0 1 1.156-1.145 1.15 1.15 0 0 1 1.157 1.145 1.15 1.15 0 0 1-1.157 1.143Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'youtube' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M20.44 5.243c.929.244 1.66.963 1.909 1.876.451 1.654.451 5.106.451 5.106s0 3.452-.451 5.106a2.681 2.681 0 0 1-1.91 1.876c-1.684.443-8.439.443-8.439.443s-6.754 0-8.439-.443a2.682 2.682 0 0 1-1.91-1.876c-.45-1.654-.45-5.106-.45-5.106s0-3.452.45-5.106a2.681 2.681 0 0 1 1.91-1.876c1.685-.443 8.44-.443 8.44-.443s6.754 0 8.438.443Zm-5.004 6.982L9.792 15.36V9.091l5.646 3.134Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'line' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2c6.066 0 11 4.005 11 8.927 0 1.97-.764 3.744-2.358 5.492-2.307 2.656-7.468 5.892-8.642 6.386-1.142.481-1.01-.271-.957-.569l.004-.024.157-.941c.037-.281.075-.717-.035-.995-.124-.306-.611-.465-.97-.542C4.914 19.034 1 15.339 1 10.927 1 6.005 5.935 2 12 2ZM7.91 13.769a.21.21 0 0 0 .21-.21v-.78a.21.21 0 0 0-.21-.21H5.808V8.758a.21.21 0 0 0-.21-.21h-.78a.21.21 0 0 0-.21.21V13.559c0 .116.094.21.21.21h3.09Zm11.43 0a.21.21 0 0 0 .21-.21v-.78a.21.21 0 0 0-.21-.21h-2.1v-.81h2.1a.21.21 0 0 0 .21-.21v-.78a.21.21 0 0 0-.21-.21h-2.1v-.81h2.1a.21.21 0 0 0 .21-.21v-.781a.21.21 0 0 0-.21-.21h-3.09a.21.21 0 0 0-.21.21V13.559c0 .116.094.21.21.21h3.091ZM8.99 8.548h.78a.21.21 0 0 1 .21.21v4.8a.21.21 0 0 1-.21.21h-.78a.21.21 0 0 1-.21-.21v-4.8a.21.21 0 0 1 .21-.21Zm6.09 0h-.78a.21.21 0 0 0-.21.21v2.851l-2.196-2.966a.208.208 0 0 0-.017-.022l-.002-.001a.257.257 0 0 0-.012-.013l-.001-.001-.003-.003a.376.376 0 0 0-.011-.01l-.006-.004a.24.24 0 0 0-.011-.007l-.004-.003-.003-.001-.002-.001a.13.13 0 0 0-.01-.005l-.006-.004-.002-.001-.01-.004-.007-.003a.194.194 0 0 0-.01-.003h-.003l-.007-.003a.267.267 0 0 0-.013-.002l-.009-.002-.011-.001h-.794a.21.21 0 0 0-.21.209v4.8c0 .117.094.21.21.21h.78a.21.21 0 0 0 .21-.21v-2.85l2.199 2.97c.015.022.034.04.054.053l.003.002a.22.22 0 0 0 .013.008l.006.003a.16.16 0 0 0 .01.005l.01.005.005.001h.002c.005.003.01.004.014.005l.004.001a.211.211 0 0 0 .055.008h.775a.21.21 0 0 0 .21-.21V8.758a.21.21 0 0 0-.21-.21Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'reddit' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M21.604 10.841c.243.347.38.756.396 1.178a2.192 2.192 0 0 1-1.216 1.997c.017.22.017.441 0 .66 0 3.364-3.92 6.097-8.754 6.097s-8.753-2.733-8.753-6.096a4.307 4.307 0 0 1 0-.66 2.193 2.193 0 1 1 2.417-3.59 10.72 10.72 0 0 1 5.856-1.846l1.11-5.21a.465.465 0 0 1 .556-.36l3.679.736a1.501 1.501 0 1 1-.195.915l-3.213-.675-.976 4.684a10.69 10.69 0 0 1 5.78 1.847 2.192 2.192 0 0 1 3.313.323Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'spotify' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm4.586 14.423a.623.623 0 0 1-.857.206c-2.348-1.434-5.304-1.759-8.785-.964a.623.623 0 0 1-.277-1.215c3.809-.87 7.076-.496 9.712 1.115.294.18.387.564.207.858ZM17.81 13.7a.78.78 0 0 1-1.072.257c-2.688-1.652-6.786-2.13-9.965-1.166A.78.78 0 0 1 6.32 11.3c3.631-1.102 8.146-.568 11.233 1.329a.78.78 0 0 1 .257 1.072Zm.105-2.836c-3.223-1.914-8.54-2.09-11.618-1.156a.935.935 0 1 1-.543-1.79c3.533-1.072 9.405-.865 13.116 1.338a.934.934 0 1 1-.955 1.608Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'whatsapp' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M19.354 4.552a10.336 10.336 0 0 0-7.36-3.052C6.257 1.5 1.588 6.168 1.586 11.905a10.383 10.383 0 0 0 1.39 5.202L1.5 22.5l5.516-1.447c1.52.83 3.232 1.266 4.973 1.266h.004c5.736 0 10.404-4.668 10.406-10.405a10.342 10.342 0 0 0-3.045-7.362Zm-7.36 16.01h-.004a8.639 8.639 0 0 1-4.402-1.205l-.316-.188-3.274.859.874-3.192-.206-.327a8.626 8.626 0 0 1-1.322-4.603c.002-4.769 3.882-8.649 8.653-8.649a8.59 8.59 0 0 1 6.115 2.537 8.596 8.596 0 0 1 2.53 6.119c-.002 4.769-3.881 8.649-8.649 8.649Zm4.744-6.477c-.26-.13-1.539-.76-1.777-.846-.239-.087-.412-.13-.585.13s-.672.846-.823 1.02c-.152.173-.304.195-.564.064-.26-.13-1.097-.404-2.09-1.29-.773-.69-1.295-1.54-1.447-1.801-.152-.26-.016-.401.114-.53.116-.117.26-.304.39-.456.13-.152.173-.26.26-.434.087-.173.043-.325-.022-.455s-.584-1.41-.802-1.93c-.21-.508-.425-.439-.584-.447a10.498 10.498 0 0 0-.499-.01.955.955 0 0 0-.693.326c-.239.26-.91.89-.91 2.169 0 1.28.931 2.516 1.061 2.69.13.174 1.834 2.8 4.442 3.926.62.268 1.105.428 1.482.548.623.198 1.19.17 1.638.103.5-.074 1.538-.629 1.755-1.236.216-.607.216-1.128.151-1.236-.064-.109-.238-.174-.498-.304v-.001Z" fill="currentColor" />
+    </svg>
+
+  {%- when '21buttons' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 21.6a9.6 9.6 0 1 1 0-19.2 9.6 9.6 0 0 1 0 19.2ZM10.99 9.305h-.001v-.028a1.712 1.712 0 1 0-1.684 1.712h.028a1.01 1.01 0 1 1-.028 2.021h-.028a1.712 1.712 0 1 0 1.712 1.74 1.01 1.01 0 1 1 2.021 0 1.712 1.712 0 1 0 1.74-1.74 1.01 1.01 0 0 1 0-2.02 1.712 1.712 0 1 0-1.74-1.685 1.01 1.01 0 1 1-2.02 0Z" fill="currentColor"/>
+    </svg>
+
+  {%- when 'email' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 24 }}" class="{{ class | strip }}" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 6.25C1.5 5.42157 2.17157 4.75 3 4.75H21C21.8284 4.75 22.5 5.42157 22.5 6.25V18.25C22.5 19.0784 21.8284 19.75 21 19.75H3C2.17157 19.75 1.5 19.0784 1.5 18.25V6.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22.161 5.29999L14.017 11.564C12.8279 12.4787 11.1721 12.4787 9.98299 11.564L1.83899 5.29999" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  {%- when 'share' -%}
+    <svg aria-hidden="true" focusable="false" fill="none" width="{{ width | default: 16 }}" class="{{ class | strip }}" viewBox="0 0 16 16">
+      <path d="m6.41 6.852 3.182-2.037M6.409 9.148l3.183 2.037m1.793-5.352c1.168 0 2.115-.97 2.115-2.166 0-1.197-.947-2.167-2.115-2.167-1.169 0-2.116.97-2.116 2.167 0 1.196.947 2.166 2.116 2.166Zm0 8.667c1.168 0 2.115-.97 2.115-2.167 0-1.196-.947-2.166-2.115-2.166-1.169 0-2.116.97-2.116 2.166 0 1.197.947 2.167 2.116 2.167Zm-6.77-4.333c1.169 0 2.116-.97 2.116-2.167 0-1.197-.947-2.167-2.116-2.167C3.447 5.833 2.5 6.803 2.5 8c0 1.197.947 2.167 2.115 2.167Z" stroke="currentColor" stroke-opacity=".65" stroke-linecap="square"/>
+    </svg>
+
+  {%- comment -%} STANDARD ICONS OF SHOPIFY {%- endcomment -%}
+
+  {%- when 'media-model-badge' -%}
+    <svg focusable="false" width="{{ width | default: 26 }}" viewBox="0 0 26 26" role="presentation">
+      <path d="M1 25h24V1H1z" fill="{{ settings.default_color_scheme.settings.background }}"></path>
+      <path d="M.5 25v.5h25V.5H.5z" fill="none" stroke="{{ settings.default_color_scheme.settings.text_color }}" stroke-opacity=".15"></path>
+      <path d="M19.13 8.28L14 5.32a2 2 0 00-2 0l-5.12 3a2 2 0 00-1 1.76V16a2 2 0 001 1.76l5.12 3a2 2 0 002 0l5.12-3a2 2 0 001-1.76v-6a2 2 0 00-.99-1.72zm-6.4 11.1l-5.12-3a.53.53 0 01-.26-.38v-6a.53.53 0 01.27-.46l5.12-3a.53.53 0 01.53 0l5.12 3-4.72 2.68a1.33 1.33 0 00-.67 1.2v6a.53.53 0 01-.26 0z" fill="{{ settings.default_color_scheme.settings.text_color }}" opacity=".6"></path>
+    </svg>
+
+  {%- when 'media-video-badge' -%}
+    <svg focusable="false" width="{{ width | default: 26 }}" viewBox="0 0 26 26" fill="none" role="presentation">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M1 25h24V1H1v24z" fill="{{ settings.default_color_scheme.settings.background }}"></path>
+      <path d="M.5 25v.5h25V.5H.5V25z" stroke="{{ settings.default_color_scheme.settings.text_color }}" stroke-opacity=".15"></path>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M9.718 6.72a1 1 0 00-1.518.855v10.736a1 1 0 001.562.827l8.35-5.677a1 1 0 00-.044-1.682l-8.35-5.06z" fill="{{ settings.default_color_scheme.settings.text_color }}" fill-opacity=".6"></path>
+    </svg>
+
+  {%- when 'media-view-in-space' -%}
+    <svg role="presentation" focusable="false" width="{{ width | default: 16 }}" viewBox="0 0 16 16">
+      <path d="M14.13 3.28L9 .32a2 2 0 00-2 0l-5.12 3a2 2 0 00-1 1.76V11a2 2 0 001 1.76l5.12 3a2 2 0 002 0l5.12-3a2 2 0 001-1.76V5a2 2 0 00-.99-1.72zm-6.4 11.1l-5.12-3a.53.53 0 01-.26-.38V5a.53.53 0 01.27-.46l5.12-3a.53.53 0 01.53 0l5.12 3-4.72 2.68A1.33 1.33 0 008 8.42v6a.53.53 0 01-.26 0l-.01-.04z" fill="currentColor" fill-rule="nonzero"></path>
+    </svg>
+
+  {%- comment -%} OTHER {%- endcomment -%}
+
+  {%- when 'shopify-logo' -%}
+    <svg aria-hidden="true" focusable="false" width="{{ width | default: 77 }}" class="{{ class | strip }}" fill="none" viewBox="0 0 77 22">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M10.268 1.384c.612.077 1.02.773 1.281 1.574l-1.034.32V3.207v-.152c0-.684-.095-1.234-.247-1.67zm2.139 20.028l6.45-1.401s-2.326-15.728-2.34-15.836a.207.207 0 00-.188-.174l-1.726-.128-1.27-1.262a.277.277 0 00-.11-.065l-.816 18.866zM7.57 9.712c.878 0 1.594.382 1.594.382l.817-2.43s-.552-.321-1.67-.321c-2.902 0-4.34 1.938-4.34 3.94 0 1.337.75 1.943 1.406 2.475.513.414.969.783.969 1.418 0 .35-.248.829-.856.829-.932 0-2.035-.948-2.035-.948l-.562 1.857s1.073 1.307 3.173 1.307c1.75 0 3.047-1.317 3.047-3.363 0-1.573-1.059-2.35-1.895-2.964-.547-.401-.999-.733-.999-1.172 0-.203.065-1.01 1.351-1.01zM9.042.861a.625.625 0 00-.355-.12C6.701.742 5.585 3.35 5.115 4.95l1.69-.523c.4-2.098 1.35-3.148 2.237-3.565zm.747 2.64v-.12c0-.824-.11-1.436-.28-1.862-.674.29-1.446 1.056-1.857 2.644l2.137-.661zm3.077-.951a.754.754 0 01.065-.015l-.818 18.887L0 19.153S1.57 7.015 1.63 6.587c.078-.565.097-.584.696-.772.098-.031.861-.268 1.936-.6C4.676 3.456 5.998 0 8.763 0c.362 0 .78.194 1.118.64a1.81 1.81 0 01.1-.003c1.187 0 1.862 1.012 2.244 2.112l.641-.198zm52.98 5.645h1.806l-.358 2.016h-1.787l-1.373 7.484h-2.597l1.374-7.484h-1.205l.377-2.016h1.204l.075-.446c.207-1.124.621-2.249 1.505-3.024.696-.62 1.618-.892 2.54-.892.64 0 1.11.097 1.411.233L68.31 6.16a2.47 2.47 0 00-.828-.135c-.865 0-1.392.814-1.542 1.725l-.094.446zM35.78 8.002c-1.148 0-2.05.562-2.747 1.416l-.038-.02.998-5.37h-2.597l-2.52 13.668h2.596l.865-4.672c.339-1.765 1.223-2.85 2.05-2.85.584 0 .81.407.81.989 0 .368-.038.813-.113 1.182l-.978 5.351h2.596l1.016-5.525c.113-.582.188-1.28.188-1.745 0-1.513-.771-2.424-2.126-2.424zm-9.294 3.994c-.659-.368-.997-.678-.997-1.105 0-.543.47-.892 1.204-.892.677 0 1.26.194 1.618.368l.602-1.9c-.414-.252-1.186-.445-2.183-.445-2.276 0-3.838 1.337-3.838 3.218 0 1.066.734 1.88 1.712 2.462.79.465 1.073.795 1.073 1.28 0 .504-.395.91-1.129.91-.81.02-1.656-.329-2.126-.58l-.64 1.9c.49.348 1.487.639 2.559.658 2.333.02 4.007-1.182 4.007-3.315 0-1.144-.846-1.958-1.862-2.559zm14.75 2.094c0 .97.377 1.745 1.26 1.745 1.374 0 2.146-2.52 2.146-4.169 0-.794-.301-1.609-1.223-1.609-1.411 0-2.183 2.501-2.183 4.033zm-2.652.058c0-3.238 2.07-6.146 5.192-6.146 2.427 0 3.518 1.823 3.518 3.742 0 3.315-2.07 6.146-5.136 6.146-2.333 0-3.575-1.668-3.575-3.742zm12.869 1.725c-.47 0-.79-.155-1.073-.387l.433-2.501c.301-1.667 1.148-2.773 2.05-2.773.791 0 1.035.757 1.035 1.474 0 1.725-.997 4.187-2.445 4.187zm2.483-7.87c-1.035 0-2.05.58-2.747 1.59h-.037l.15-1.436h-2.295c-.113.97-.32 2.443-.527 3.548l-1.806 9.791h2.596l.715-3.955h.056c.302.194.885.349 1.525.349 3.048 0 5.042-3.219 5.042-6.476 0-1.803-.772-3.412-2.672-3.412zm4.892-2.289c0-.872.659-1.55 1.486-1.55.79 0 1.299.562 1.299 1.337-.02.989-.715 1.551-1.524 1.551h-.038c-.734 0-1.223-.543-1.223-1.338zm-2.145 11.982h2.597l1.768-9.48h-2.615l-1.75 9.48zm17.215-9.48l-1.58 4.245c-.334.912-.52 1.488-.702 2.053l-.07.216h-.037a40.242 40.242 0 00-.226-2.25l-.414-4.265h-2.728l1.562 8.706c.037.193.018.31-.057.445-.3.601-.809 1.183-1.41 1.61-.49.368-1.036.6-1.468.756L67.483 22c.526-.116 1.618-.562 2.54-1.454 1.185-1.144 2.276-2.908 3.405-5.312l3.18-7.019h-2.71z" fill="currentColor"></path>
+    </svg>
+
+  {%- comment -%} COLLECTION {%- endcomment -%}
+  {%- when 'collection-layout-1' -%}
+    <svg role="presentation" width="{{ width | default: 18 }}" viewBox="0 0 18 18" fill="none">
+      <path fill="currentColor" d="M0 0h18v18H0z"/>
+    </svg>
+
+  {%- when 'collection-layout-2' -%}
+    <svg role="presentation" width="{{ width | default: 18 }}" viewBox="0 0 18 18" fill="none">
+      <path fill="currentColor" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"/>
+    </svg>
+
+  {%- when 'collection-layout-3' -%}
+    <svg role="presentation" width="{{ width | default: 18 }}" viewBox="0 0 18 18" fill="none">
+      <path fill="currentColor" d="M0 0h4v4H0zM0 7h4v4H0zM0 14h4v4H0zM7 0h4v4H7zM7 7h4v4H7zM7 14h4v4H7zM14 0h4v4h-4zM14 7h4v4h-4zM14 14h4v4h-4z"/>
+    </svg>
+
+  {%- when 'collection-layout-4' -%}
+    <svg role="presentation" width="{{ width | default: 18 }}" viewBox="0 0 18 18" fill="none">
+      <path fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"/>
+    </svg>
+{%- endcase -%}

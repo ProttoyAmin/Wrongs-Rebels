@@ -1,0 +1,78 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+ACTIVE FACETS
+----------------------------------------------------------------------------------------------------------------------
+
+Show the active facets for a given faceted search. This snippet automatically reads some global section settings to
+decide to show or not the filter group name
+
+********************************************
+Supported variables
+********************************************
+
+* results: either collection or search drop to extract the active facets from
+{%- endcomment -%}
+
+{%- assign active_values_count = 0 -%}
+
+{%- capture active_facets -%}
+  {%- for filter in results.filters -%}
+    {%- if filter.type == 'price_range' -%}
+      {%- if filter.max_value.value != blank or filter.min_value.value != blank -%}
+        <div class="removable-facet">
+          <facet-link>
+            <a href="{{ filter.url_to_remove }}" class="tap-area link-faded" aria-label="{{ 'collection.faceting.remove_filter' | t: name: filter.label }}" data-no-instant>
+              {%- render 'icon' with 'close', width: 10 -%}
+            </a>
+          </facet-link>
+
+          {%- if section.settings.show_filter_group_name -%}
+            <span class="text-subdued">{{- filter.label }}: {{ filter.min_value.value | default: 0 | money_without_trailing_zeros }} - {{ filter.max_value.value | default: filter.range_max | money_without_trailing_zeros -}}</span>
+          {%- else -%}
+            <span class="text-subdued">{{- filter.min_value.value | default: 0 | money_without_trailing_zeros }} - {{ filter.max_value.value | default: filter.range_max | money_without_trailing_zeros -}}</span>
+          {%- endif -%}
+        </div>
+
+        {%- assign active_values_count = active_values_count | plus: 1 -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- for active_value in filter.active_values -%}
+        <div class="removable-facet">
+          <facet-link>
+            <a href="{{ active_value.url_to_remove }}" class="tap-area link-faded" aria-label="{{ 'collection.faceting.remove_filter' | t: name: active_value.label }}" data-no-instant>
+              {%- render 'icon' with 'close', width: 10 -%}
+            </a>
+          </facet-link>
+
+          {%- if section.settings.show_filter_group_name or filter.type == 'boolean' -%}
+            <span class="text-subdued">{{- filter.label }}: {{ active_value.label -}}</span>
+          {%- else -%}
+            <span class="text-subdued">{{- active_value.label -}}</span>
+          {%- endif -%}
+        </div>
+
+        {%- assign active_values_count = active_values_count | plus: 1 -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if active_values_count > 1 -%}
+    {%- if request.page_type == 'collection' -%}
+      {%- assign default_url = collection.url -%}
+    {%- else -%}
+      {%- capture default_url -%}{{ routes.search_url }}?q={{ search.terms }}&type=product&sort_by={{ search.sort_by }}{%- endcapture -%}
+    {%- endif -%}
+
+    <facet-link>
+      <a href="{{ default_url }}" class="facets-clear-all text-subdued">
+        <span class="link">{{ 'collection.faceting.clear_filters' | t }}</span>
+      </a>
+    </facet-link>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if active_values_count > 0 -%}
+  <div class="active-facets {% if section.settings.filter_layout == 'drawer' %}justify-center{% endif %}">
+    {{- active_facets -}}
+  </div>
+{%- endif -%}

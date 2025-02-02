@@ -1,0 +1,62 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+PRODUCT QUICK BUY
+----------------------------------------------------------------------------------------------------------------------
+
+This component is used to render the quick buy content. It is important to note that this snippet must always be
+included inside a product template (you can find an example in the "main-product.liquid" section). The reason is that
+we want to re-use the settings of the merchant on their product page (which info they want to make it visible). To do
+that, we need to re-use the whole product page, and extract the quick-buy part (rendered here).
+
+********************************************
+Supported variables
+********************************************
+
+* product: the product to render
+* section: the section is implicitly available. Here, the section is always a "product" template section, so you can
+           access all the information from the section
+{%- endcomment -%}
+
+{%- capture product_form_id -%}product-form-quick-buy-{{ product.id }}-{{ section.id }}{%- endcapture -%}
+
+<template id="quick-buy-content">
+  <p class="h5" slot="header">{{ 'product.general.choose_options' | t }}</p>
+
+  <div class="quick-buy-modal__content">
+    <product-rerender id="quick-buy-modal-content" observe-form="{{ product_form_id }}">
+      <dialog-close-button class="contents">
+        <button type="button" class="quick-buy-modal__close-button sm-max:hidden">
+          <span class="sr-only">{{ 'general.accessibility.close' | t }}</span>
+          {%- render 'icon' with 'close' -%}
+        </button>
+      </dialog-close-button>
+
+      <div class="quick-buy-modal__gallery-wrapper">
+        {%- if product.media.size > 0 -%}
+          {%- render 'product-gallery',
+              product: product,
+              product_form_id: product_form_id,
+              desktop_layout: 'carousel_dots',
+              mobile_controls: 'arrows',
+              enable_media_autoplay: section.settings.enable_media_autoplay,
+              enable_video_looping: section.settings.enable_video_looping,
+              enable_image_zoom: false
+          -%}
+        {%- endif -%}
+        
+        <div class="quick-buy-modal__mobile-info v-stack gap-1 justify-center text-center sm:hidden">
+          <a href="{{ product.url }}" class="product-title h6">{{ product.title }}</a>
+
+          {%- if product.selected_or_first_available_variant != nil -%}
+            {% render 'price-list', product: product, variant: product.selected_or_first_available_variant, hide_unit_price: true, context: 'card' %}
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="quick-buy-modal__info-wrapper">
+        {%- render 'product-info', product: product, product_form_id: product_form_id, context: 'quick_buy' -%}
+        <a href="{{ product.url }}" class="quick-buy-modal__view-more link sm-max:hidden">{{ 'product.general.view_details' | t }}</a>
+      </div>
+    </product-rerender>
+  </div>
+</template>

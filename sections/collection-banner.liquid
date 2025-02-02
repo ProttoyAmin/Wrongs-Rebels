@@ -1,0 +1,244 @@
+{%- if section.settings.show_image == false or collection.image == blank and section.settings.image == blank -%}
+  {%- assign show_image = false -%}
+{%- else -%}
+  {%- assign show_image = true -%}
+{%- endif -%}
+
+{%- capture collection_breadcrumb -%}
+  {%- if section.settings.show_breadcrumb -%}
+    <nav class="breadcrumb breadcrumb--floating" aria-label="{{ 'general.breadcrumb.label' | t | escape }}">
+      <ol class="breadcrumb__list unstyled-list">
+        <li class="breadcrumb__list-item">
+          <a href="{{ routes.root_url }}" class="smallcaps {% unless show_image %}link-faded{% endunless %}">{{ 'general.breadcrumb.home' | t }}</a>
+        </li>
+
+        <li class="breadcrumb__list-item">
+          <a href="{{ routes.all_products_collection_url }}" class="smallcaps {% unless show_image %}link-faded{% endunless %}">{{ 'general.breadcrumb.shop' | t }}</a>
+        </li>
+
+        <li class="breadcrumb__list-item">
+          <a href="{{ collection.url }}" aria-current="page" class="smallcaps {% unless show_image %}link-faded{% endunless %}">{{ collection.title }}</a>
+        </li>
+      </ol>
+    </nav>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture collection_content -%}
+  {%- if section.settings.show_collection_title -%}
+    <h1 class="h1">{{ collection.title }} <sup> {{ collection.products_count }} </sup></h1>
+  {%- endif -%}
+
+  {%- if section.settings.show_collection_description -%}
+    <div class="collection-description">
+      {{- collection.description -}}
+    </div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if show_image -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      --content-over-media-overlay: {{ section.settings.overlay_color.rgb }} / {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+      --content-over-media-content-max-width: var(--container-{{ section.settings.content_width }}-max-width);
+    }
+  </style>
+
+  <collection-banner {% if section.settings.reveal %}reveal-on-scroll="true"{% endif %} class="collection-banner color-scheme color-scheme--{{ section.settings.color_scheme.id }}" {% if section.settings.allow_transparent_header %}allow-transparent-header{% endif %}>
+    {%- unless section.settings.allow_transparent_header -%}
+      {{- collection_breadcrumb -}}
+    {%- endunless -%}
+
+    <div class="content-over-media content-over-media--{{ section.settings.image_size }}">
+      {%- capture picture_content -%}
+        <picture>
+          {%- if section.settings.mobile_image != blank -%}
+            <source
+                media="(max-width: 699px)"
+                srcset="{{ section.settings.mobile_image | image_url: width: '400x' }} 400w, {{ section.settings.mobile_image | image_url: width: '600x' }} 600w, {{ section.settings.mobile_image | image_url: width: '800x' }} 800w, {{ section.settings.mobile_image | image_url: width: '1000x' }} 1000w"
+                width="{{ section.settings.mobile_image.width }}"
+                height="{{ section.settings.mobile_image.height }}"
+            >
+          {%- endif -%}
+
+          {%- assign image = section.settings.image | default: collection.image -%}
+          {{- image | image_url: width: image.width | image_tag: fetchpriority: 'high', widths: '300,400,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200' -}}
+        </picture>
+      {%- endcapture -%}
+
+      {%- if section.settings.enable_parallax -%}
+        <image-parallax class="contents">
+          {{- picture_content -}}
+        </image-parallax>
+      {%- else -%}
+        {{- picture_content -}}
+      {%- endif -%}
+
+      <div class="prose text-center">
+        {{ collection_content }}
+      </div>
+    </div>
+  </collection-banner>
+{%- elsif collection_content != blank -%}
+  <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+    <div class="relative section-spacing section-spacing--tight">
+      <div class="container container--{{ section.settings.content_width }}">
+        {{- collection_breadcrumb -}}
+
+        <div class="prose text-center">
+          {{- collection_content -}}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.collection_banner.name",
+  "class": "shopify-section--collection-banner",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-4"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:global.image.image",
+      "info": "t:sections.collection_banner.image_info"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "t:global.image.mobile_image",
+      "info": "t:sections.collection_banner.mobile_image_info"
+    },
+    {
+      "type": "select",
+      "id": "image_size",
+      "label": "t:global.image.size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:global.sizes.original_image_ratio"
+        },
+        {
+          "value": "xs",
+          "label": "t:global.sizes.x_small"
+        },
+        {
+          "value": "sm",
+          "label": "t:global.sizes.small"
+        },
+        {
+          "value": "md",
+          "label": "t:global.sizes.medium"
+        },
+        {
+          "value": "lg",
+          "label": "t:global.sizes.large"
+        }
+      ],
+      "info": "t:global.image.ratio_avoid_cropping_info",
+      "default": "auto"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_transparent_header",
+      "label": "t:global.section.allow_transparent_header",
+      "info": "t:global.section.allow_transparent_header_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "reveal",
+      "label": "t:sections.collection_banner.reveal",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "t:sections.collection_banner.enable_parallax",
+      "info": "t:sections.collection_banner.enable_parallax_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "t:sections.collection_banner.show_image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_title",
+      "label": "t:sections.collection_banner.show_collection_title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "label": "t:sections.collection_banner.show_collection_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "t:sections.collection_banner.show_breadcrumb",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "t:global.sizes.content_width",
+      "options": [
+        {
+          "value": "xs",
+          "label": "t:global.sizes.x_small"
+        },
+        {
+          "value": "sm",
+          "label": "t:global.sizes.small"
+        },
+        {
+          "value": "md",
+          "label": "t:global.sizes.medium"
+        },
+        {
+          "value": "lg",
+          "label": "t:global.sizes.large"
+        },
+        {
+          "value": "xl",
+          "label": "t:global.sizes.x_large"
+        }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "header",
+      "content": "t:global.colors.category",
+      "info": "t:sections.collection_banner.colors_category_info"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:global.colors.overlay_color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:global.colors.overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 30
+    }
+  ]
+}
+{% endschema %}

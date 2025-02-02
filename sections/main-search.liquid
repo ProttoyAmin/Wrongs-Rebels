@@ -1,0 +1,372 @@
+{%- if search.performed -%}
+  {%- liquid
+    assign active_values_count = 0
+
+    for filter in search.filters
+      if filter.type == 'price_range'
+        if filter.max_value.value != blank or filter.min_value.value != blank
+          assign active_values_count = active_values_count | plus: 1
+        endif
+      else
+        assign active_values_count = active_values_count | plus: filter.active_values.size
+      endif
+    endfor
+
+    if section.settings.show_filters and search.filters.size > 0
+      assign show_filters = true
+    else
+      assign show_filters = false
+    endif
+  -%}
+
+  {%- if search.results_count > 0 or active_values_count > 0 -%}
+    <style>
+      #shopify-section-{{ section.id }} {
+        --product-list-horizontal-spacing-factor: {{ section.settings.horizontal_spacing_factor }};
+        --product-list-vertical-spacing-factor: {{ section.settings.vertical_spacing_factor }};
+        --product-list-items-per-row: 2;
+      }
+
+      @media screen and (min-width: 700px) {
+        #shopify-section-{{ section.id }} {
+          --product-list-items-per-row: 3;
+        }
+      }
+
+      @media screen and (min-width: 1000px) {
+        #shopify-section-{{ section.id }} .collection {
+          {%- if show_filters -%}
+            --collection-grid-template: var(--collection-sidebar-width, 0) minmax(0,1fr);
+          {%- endif -%}
+        }
+      }
+
+      @media screen and (min-width: 1400px) {
+        #shopify-section-{{ section.id }} {
+          --product-list-items-per-row: 4;
+        }
+      }
+    </style>
+
+    {%- paginate search.results by 48 -%}
+      <div class="section-spacing section-spacing--tight color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+        <div class="container">
+          <div class="section-stack">
+            <div class="section-header justify-self-center text-center">
+              <div class="v-stack gap-4">
+                <h1 class="h2">{{ 'search.general.title' | t }}</h1>
+                <p>{{ 'search.results_count_for_terms' | t: count: search.results_count, terms: search.terms }}</p>
+              </div>
+            </div>
+
+            <div class="main-search">
+              <x-tabs class="main-search__tabs content-tabs content-tabs--center">
+                <template shadowrootmode="open">
+                  <style>
+                    .scrollable::-webkit-scrollbar {
+                      display: none;
+                    }
+                  </style>
+
+                  {%- assign unique_types = search.results | map: 'object_type' | uniq -%}
+
+                  {%- if search.types.size > 1 and unique_types.size > 1 -%}
+                    <div part="tab-list-scrollable" class="scrollable">
+                      <slot role="tablist" part="tab-list" name="title"></slot>
+                    </div>
+                  {%- endif -%}
+
+                  <slot part="tab-panels" name="content"></slot>
+                </template>
+
+                {%- assign product_results = search.results | where: 'object_type', 'product' -%}
+                {%- assign article_results = search.results | where: 'object_type', 'article' -%}
+                {%- assign page_results = search.results | where: 'object_type', 'page' -%}
+
+                {%- if product_results.size > 0 or active_values_count > 0 -%}
+                  <button type="button" class="h6" role="tab" slot="title">{{ 'search.general.products' | t }}</button>
+
+                  <div class="main-search__resource-item" role="tabpanel" slot="content" {% cycle 'result_tab': '', 'hidden', 'hidden', 'hidden' %}>
+                    <div class="v-stack gap-6 sm:gap-12">
+                      {%- if show_filters or section.settings.show_sort_by -%}
+                        <height-observer variable="collection-toolbar" class="collection-toolbar full-bleed">
+                          <div class="collection-toolbar__button-list">
+                            {%- if show_filters -%}
+                              <div class="collection-toolbar__button-container md:hidden">
+                                <button type="button" aria-controls="facets-drawer" class="collection-toolbar__button heading text-xxs w-full">
+                                  {{- 'collection.faceting.filter_button' | t }} {% if active_values_count > 0 %}({{ active_values_count }}){% endif -%}
+                                </button>
+                              </div>
+                            {%- endif -%}
+
+                            {%- if section.settings.show_sort_by -%}
+                              {%- assign selected_sort_by_value = search.sort_by | default: search.default_sort_by -%}
+
+                              <div class="collection-toolbar__button-container">
+                                <button type="button" aria-controls="sort-by-popover" class="collection-toolbar__button heading text-xxs w-full">
+                                  <span class="text-with-icon justify-center">
+                                    {{- 'collection.faceting.sort_by' | t -}}
+                                    {%- render 'icon' with 'chevron-down' -%}
+                                  </span>
+                                </button>
+
+                                <facets-sort-popover id="sort-by-popover" section-id="{{ section.id }}" class="popover popover--bottom-end color-scheme color-scheme--dialog" close-on-listbox-select>
+                                  <p class="h4" slot="header">{{ 'collection.faceting.sort_by' | t }}</p>
+
+                                  <x-listbox class="popover__value-list">
+                                    {%- for sort_option in search.sort_options -%}
+                                      {%- if sort_option.name != blank -%}
+                                        <button type="button" class="popover__value-option group" role="option" value="{{ sort_option.value }}" {% if sort_option.value == selected_sort_by_value %}aria-selected="true"{% endif %}>
+                                          <span class="reversed-link">{{ sort_option.name }}</span>
+                                        </button>
+                                      {%- endif -%}
+                                    {%- endfor -%}
+                                  </x-listbox>
+                                </facets-sort-popover>
+                              </div>
+                            {%- endif -%}
+                          </div>
+                        </height-observer>
+                      {%- endif -%}
+
+                      <div class="collection">
+                        {%- if show_filters -%}
+                          <facets-drawer id="facets-drawer" class="facets-drawer drawer drawer--sm color-scheme color-scheme--dialog md:hidden">
+                            <p class="h4" slot="header">{{ 'collection.faceting.filters' | t }}</p>
+
+                            {%- render 'facets', results: search, show_filters: section.settings.show_filters, open_filters_by_default: section.settings.open_filters_by_default, update_on_change: false, context: 'drawer' -%}
+
+                            <div slot="footer">
+                              {%- assign button_content = 'collection.faceting.apply_filters' | t -%}
+
+                              <dialog-close-button class="contents">
+                                {%- render 'button', type: 'button', content: button_content, stretch: true -%}
+                              </dialog-close-button>
+                            </div>
+                          </facets-drawer>
+
+                          <safe-sticky class="facets-sidebar md-max:hidden">
+                            {%- render 'facets', results: search, show_filters: section.settings.show_filters, open_filters_by_default: section.settings.open_filters_by_default, update_on_change: true, context: 'sidebar' -%}
+                          </safe-sticky>
+                        {%- endif -%}
+
+                        {%- if search.results_count == 0 -%}
+                          <div class="empty-state">
+                            <div class="v-stack gap-4">
+                              <p>{{ 'collection.faceting.no_results' | t }}</p>
+
+                              {%- assign button_content = 'collection.faceting.clear_filters' | t -%}
+                              {%- capture clean_search_url -%}{{ routes.search_url }}?q={{ search.terms }}{%- endcapture -%}
+
+                              <facet-link>
+                                {%- render 'button', href: clean_search_url, content: button_content -%}
+                              </facet-link>
+                            </div>
+                          </div>
+                        {%- else -%}
+                          <div class="collection__main">
+                            {%- render 'active-facets', results: search -%}
+
+                            <product-list id="product-list-{{ section.id }}" class="product-list">
+                              {%- for product in product_results -%}
+                                {%- render 'product-card', product: product, stacked: true, reveal: settings.stagger_products_apparition, position: forloop.index -%}
+                              {%- endfor -%}
+                            </product-list>
+
+                            {%- render 'pagination', paginate: paginate, facet: true -%}
+                          </div>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </div>
+                {%- endif -%}
+
+                {%- if article_results.size > 0 -%}
+                  <button type="button" class="h6" role="tab" slot="title">{{ 'search.general.posts' | t }}</button>
+
+                  <div class="main-search__resource-item" role="tabpanel" slot="content" {% cycle 'result_tab': '', 'hidden', 'hidden', 'hidden' %}>
+                    <blog-posts class="blog-post-list justify-center" {% if settings.stagger_blog_posts_apparition %}reveal-on-scroll="true"{% endif %}>
+                      {%- capture sizes -%}(max-width: 699px) 95vw, (max-width: 1149px) calc(100vw / 2), calc((80rem - (5rem * (3 - 1) / 3){%- endcapture -%}
+
+                      {%- for article in article_results -%}
+                        {%- render 'blog-post-card', article: article, show_category: section.settings.show_category, show_excerpt: section.settings.show_excerpt, show_read_more: section.settings.show_read_more, sizes: sizes, position: forloop.index -%}
+                      {%- endfor -%}
+                    </blog-posts>
+                  </div>
+                {%- endif -%}
+
+                {%- if page_results.size > 0 -%}
+                  <button type="button" class="h6" role="tab" slot="title">{{ 'search.general.pages' | t }}</button>
+
+                  <div class="main-search__resource-item" role="tabpanel" slot="content" {% cycle 'result_tab': '', 'hidden', 'hidden', 'hidden' %}>
+                    <ul class="main-search__linklist v-stack gap-3 unstyled-list" role="list">
+                      {%- for page in page_results -%}
+                        <li>
+                          <a href="{{ page.url }}" class="link-reverse" data-instant>{{ page.title }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+              </x-tabs>
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endpaginate -%}
+  {%- else -%}
+    <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+      <div class="container container--xs">
+        <div class="empty-state">
+          <div class="v-stack gap-4">
+            <div class="prose">
+              <h1 class="h4">{{ 'search.general.title' | t }}</h1>
+              <p>{{ 'search.general.no_results' | t: terms: search.terms }}</p>
+            </div>
+
+            <form class="main-search-form" action="{{ routes.search_url }}" method="get" role="search">
+              {%- assign placeholder = 'search.general.search_placeholder' | t -%}
+
+              <div class="relative">
+                {%- render 'input', type: 'text', name: 'q', label: placeholder, autocomplete: 'off', autocorrect: 'off' -%}
+                <button type="submit" class="input-suffix link-faded">{% render 'icon' with 'search' %}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+{%- else -%}
+  <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+    <div class="container container--xs">
+      <div class="empty-state">
+        <div class="v-stack gap-4">
+          <div class="prose">
+            <h1 class="h4">{{ 'search.general.title' | t }}</h1>
+          </div>
+
+          <form class="main-search-form" action="{{ routes.search_url }}" method="get" role="search">
+            {%- assign placeholder = 'search.general.search_placeholder' | t -%}
+
+            <div class="relative">
+              {%- render 'input', type: 'text', name: 'q', label: placeholder, autocomplete: 'off', autocorrect: 'off' -%}
+              <button type="submit" class="input-suffix link-faded">{% render 'icon' with 'search' %}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.main_search.name",
+  "class": "shopify-section--main-search",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_search.product_results_category"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort_by",
+      "label": "t:global.faceting.show_sort_by",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:global.faceting.products_per_page",
+      "min": 8,
+      "max": 50,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "t:global.product_list.spacing_category",
+      "info": "t:global.product_list.spacing_category_info"
+    },
+    {
+      "type": "range",
+      "min": 0.2,
+      "max": 2,
+      "step": 0.1,
+      "id": "horizontal_spacing_factor",
+      "label": "t:global.product_list.horizontal_spacing_factor",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "min": 0.2,
+      "max": 2,
+      "step": 0.1,
+      "id": "vertical_spacing_factor",
+      "label": "t:global.product_list.vertical_spacing_factor",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_search.product_filters_category"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "t:global.faceting.show_filters",
+      "info": "t:global.faceting.show_filters_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_group_name",
+      "label": "t:global.faceting.show_group_name",
+      "info": "t:global.faceting.show_group_name_info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_values_count",
+      "label": "t:global.faceting.show_filter_values_count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "open_filters_by_default",
+      "label": "t:global.faceting.open_filters_by_default",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_search.blog_post_results_category"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category",
+      "label": "t:global.blog.show_category",
+      "info": "t:global.blog.show_category_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "t:global.blog.show_excerpt",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_more",
+      "label": "t:global.blog.show_read_more",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

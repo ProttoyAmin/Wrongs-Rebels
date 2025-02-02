@@ -1,0 +1,277 @@
+{%- comment -%}
+This file defines all the CSS variables used throughout the theme. Feel free to adjust them at your own need, but
+note that this may have impact on different places.
+{%- endcomment -%}
+
+{%- assign language_code = localization.language.iso_code | split: '-' | first -%}
+
+<style>
+  {%- assign heading_font_italic = settings.heading_font | font_modify: 'style', 'italic' -%}
+  {%- assign text_font_italic = settings.text_font | font_modify: 'style', 'italic' -%}
+  {%- assign text_font_bold = settings.text_font | font_modify: 'weight', 'bolder' -%}
+  {%- assign text_font_bold_italic = text_font_bold | font_modify: 'style', 'italic' -%}
+
+  /* Typography (heading) */
+  {{ settings.heading_font | font_face: font_display: 'fallback' }}
+
+  {%- if heading_font_italic -%}
+    {{ heading_font_italic | font_face: font_display: 'fallback' }}
+  {%- endif -%}
+
+  /* Typography (body) */
+  {{ settings.text_font | font_face: font_display: 'fallback' }}
+
+  {%- if text_font_italic -%}
+    {{ text_font_italic | font_face: font_display: 'fallback' }}
+  {%- endif -%}
+
+  {%- if text_font_bold -%}
+    {{ text_font_bold | font_face: font_display: 'fallback' }}
+  {%- endif -%}
+
+  {%- if text_font_bold_italic -%}
+    {{ text_font_bold_italic | font_face: font_display: 'fallback' }}
+  {%- endif -%}
+
+  :root {
+    /* Container */
+    --container-max-width: 100%;
+    --container-xxs-max-width: 27.5rem; /* 440px */
+    --container-xs-max-width: 42.5rem; /* 680px */
+    --container-sm-max-width: 61.25rem; /* 980px */
+    --container-md-max-width: 71.875rem; /* 1150px */
+    --container-lg-max-width: 78.75rem; /* 1260px */
+    --container-xl-max-width: 85rem; /* 1360px */
+    --container-gutter: 1.25rem;
+
+    --section-vertical-spacing: {% if settings.section_vertical_spacing == 'xs' %}2rem{%- elsif settings.section_vertical_spacing == 'sm' %}2.25rem{% elsif settings.section_vertical_spacing == 'md' %}2.5rem{% elsif settings.section_vertical_spacing == 'lg' %}3rem{% else %}4rem{% endif %};
+    --section-vertical-spacing-tight: {%- if settings.section_vertical_spacing == 'xs' %}2rem{% elsif section.settings_vertical_spacing == 'sm' %}2.25rem{% else %}2.5rem{% endif %};
+
+    --section-stack-gap: {%- if settings.section_vertical_spacing == 'xs' %}1.5rem{% elsif settings.section_vertical_spacing == 'sm' %}1.75rem{% elsif settings.section_vertical_spacing == 'md' %}2.25rem{% else %}2.5rem{% endif %};
+    --section-stack-gap-tight: {%- if settings.section_vertical_spacing == 'xs' %}1.5rem{% elsif settings.section_vertical_spacing == 'sm' %}1.75rem{% else %}2.25rem{% endif %};
+
+    /* Form settings */
+    --form-gap: 1.25rem; /* Gap between fieldset and submit button */
+    --fieldset-gap: 1rem; /* Gap between each form input within a fieldset */
+    --form-control-gap: 0.625rem; /* Gap between input and label (ignored for floating label) */
+    --checkbox-control-gap: 0.75rem; /* Horizontal gap between checkbox and its associated label */
+    --input-padding-block: 0.65rem; /* Vertical padding for input, textarea and native select */
+    --input-padding-inline: 0.8rem; /* Horizontal padding for input, textarea and native select */
+    --checkbox-size: 0.875rem; /* Size (width and height) for checkbox */
+
+    /* Other sizes */
+    --sticky-area-height: calc(var(--announcement-bar-is-sticky, 0) * var(--announcement-bar-height, 0px) + var(--header-is-sticky, 0) * var(--header-is-visible, 1) * var(--header-height, 0px));
+
+    /* RTL support */
+    --transform-logical-flip: 1;
+    --transform-origin-start: left;
+    --transform-origin-end: right;
+
+    /**
+     * ---------------------------------------------------------------------
+     * TYPOGRAPHY
+     * ---------------------------------------------------------------------
+     */
+
+    /* Font properties */
+    --heading-font-family: {{ settings.heading_font.family }}, {{ settings.heading_font.fallback_families }};
+    --heading-font-weight: {{ settings.heading_font.weight }};
+    --heading-font-style: {{ settings.heading_font.style }};
+    --heading-text-transform: {{ settings.heading_text_transform }};
+    --heading-letter-spacing: {% if language_code == 'ar' %}0{% else %}{{ settings.heading_letter_spacing | divided_by: 100.0 }}{% endif %}em;
+    --text-font-family: {{ settings.text_font.family }}, {{ settings.text_font.fallback_families }};
+    --text-font-weight: {{ settings.text_font.weight }};
+    --text-font-style: {{ settings.text_font.style }};
+    --text-letter-spacing: {% if language_code == 'ar' %}0{% else %}{{ settings.text_font_letter_spacing | divided_by: 100.0 }}{% endif %}em;
+    --button-font: {% if settings.button_text_font == 'heading' %}var(--heading-font-style) var(--heading-font-weight) var(--text-sm) / 1.65 var(--heading-font-family){% else %}var(--text-font-style) var(--text-font-weight) var(--text-sm) / 1.65 var(--text-font-family){% endif %};
+    --button-text-transform: {{ settings.button_text_transform }};
+    --button-letter-spacing: {% if language_code == 'ar' %}0{% else %}{{ settings.button_letter_spacing | divided_by: 100.0 }}{% endif %}em;
+
+    /* Font sizes */
+    {%- comment -%}
+    IMPLEMENTATION NOTE: Our theme uses, for heading, a fluid typography, which means it will linearly increased from a
+    minimum size to a maximum size. In addition, to give merchants the ability to control the size of the headings proportionnally,
+    we have a theme settings that add a scaling factor. We also add an extra "max" rule set to 11px, to ensure a minimum size
+    for readability. The calculations are done with a minimum viewport of 375px and a maximum viewport of 1400px
+    {%- endcomment -%}
+    --text-heading-size-factor: {{ settings.heading_font_size_factor }};
+    --text-h1: max(0.6875rem, clamp(1.375rem, 1.146341463414634rem + 0.975609756097561vw, 2rem) * var(--text-heading-size-factor));
+    --text-h2: max(0.6875rem, clamp(1.25rem, 1.0670731707317074rem + 0.7804878048780488vw, 1.75rem) * var(--text-heading-size-factor));
+    --text-h3: max(0.6875rem, clamp(1.125rem, 1.0335365853658536rem + 0.3902439024390244vw, 1.375rem) * var(--text-heading-size-factor));
+    --text-h4: max(0.6875rem, clamp(1rem, 0.9542682926829268rem + 0.1951219512195122vw, 1.125rem) * var(--text-heading-size-factor));
+    --text-h5: calc(0.875rem * var(--text-heading-size-factor));
+    --text-h6: calc(0.75rem * var(--text-heading-size-factor));
+
+    --text-xs: {{ settings.text_font_size_mobile | minus: 2 | at_least: 11 | divided_by: 16.0 }}rem;
+    --text-sm: {{ settings.text_font_size_mobile | minus: 1 | at_least: 12 | divided_by: 16.0 }}rem;
+    --text-base: {{ settings.text_font_size_mobile | divided_by: 16.0 }}rem;
+    --text-lg: {{ settings.text_font_size_mobile | plus: 2 | divided_by: 16.0 }}rem;
+    --text-xl: {{ settings.text_font_size_desktop | plus: 4 | at_most: 20 | divided_by: 16.0 }}rem;
+
+    /* Rounded variables (used for border radius) */
+    --rounded-full: 9999px;
+    --button-border-radius: {{ settings.button_border_radius | divided_by: 16.0 }}rem;
+    --input-border-radius: {{ settings.input_border_radius | divided_by: 16.0 }}rem;
+
+    /* Box shadow */
+    --shadow-sm: 0 2px 8px rgb(0 0 0 / 0.05);
+    --shadow: 0 5px 15px rgb(0 0 0 / 0.05);
+    --shadow-md: 0 5px 30px rgb(0 0 0 / 0.05);
+    --shadow-block: {{ settings.block_shadow_horizontal_offset }}px {{ settings.block_shadow_vertical_offset }}px {{ settings.block_shadow_blur }}px rgb(var(--text-primary) / {{ settings.block_shadow_opacity | divided_by: 100.0 }});
+
+    /**
+     * ---------------------------------------------------------------------
+     * OTHER
+     * ---------------------------------------------------------------------
+     */
+
+    --checkmark-svg-url: url({{ 'checkmark.svg' | asset_url }});
+    --cursor-zoom-in-svg-url: url({{ 'cursor-zoom-in.svg' | asset_url }});
+  }
+
+  [dir="rtl"]:root {
+    /* RTL support */
+    --transform-logical-flip: -1;
+    --transform-origin-start: right;
+    --transform-origin-end: left;
+  }
+
+  @media screen and (min-width: 700px) {
+    :root {
+      /* Typography (font size) */
+      --text-xs: {{ settings.text_font_size_desktop | minus: 2 | at_least: 11 | divided_by: 16.0 }}rem;
+      --text-sm: {{ settings.text_font_size_desktop | minus: 1 | at_least: 12 | divided_by: 16.0 }}rem;
+      --text-base: {{ settings.text_font_size_desktop | divided_by: 16.0 }}rem;
+      --text-lg: {{ settings.text_font_size_desktop | plus: 2 | divided_by: 16.0 }}rem;
+      --text-xl: {{ settings.text_font_size_desktop | plus: 6 | at_most: 22 | divided_by: 16.0 }}rem;
+
+      /* Spacing settings */
+      --container-gutter: 2rem;
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    :root {
+      /* Spacing settings */
+      --container-gutter: 3rem;
+
+      --section-vertical-spacing: {% if settings.section_vertical_spacing == 'xs' %}3rem{%- elsif settings.section_vertical_spacing == 'sm' %}3.5rem{% elsif settings.section_vertical_spacing == 'md' %}4rem{% elsif settings.section_vertical_spacing == 'lg' %}5rem{% else %}7rem{% endif %};
+      --section-vertical-spacing-tight: {% if settings.section_vertical_spacing == 'xs' %}3rem{%- elsif settings.section_vertical_spacing == 'sm' %}3.5rem{% else %}4rem{% endif %};
+
+      --section-stack-gap: {%- if settings.section_vertical_spacing == 'xs' %}2.25rem{% elsif settings.section_vertical_spacing == 'sm' %}2.5rem{% elsif settings.section_vertical_spacing == 'md' %}3rem{% else %}4rem{% endif %};
+      --section-stack-gap-tight: {%- if settings.section_vertical_spacing == 'xs' %}2.25rem{% elsif settings.section_vertical_spacing == 'sm' %}2.5rem{% elsif settings.section_vertical_spacing == 'md' %}3rem{% else %}4rem{% endif %};
+    }
+  }
+
+  {%- comment -%}
+  ----------------------------------------------------------------------------------------------------------------------
+  COLORS
+  ----------------------------------------------------------------------------------------------------------------------
+
+  This output both general colors, as well as each color scheme. Each scheme is given a class color-scheme--{{ COLOR_SCHEME_ID }},
+  allowing to easily re-use scheme across sections
+  {%- endcomment -%}
+
+  :root {
+    {%- assign product_on_sale_accent_brightness = settings.product_on_sale_accent | color_brightness -%}
+    {%- assign product_sold_out_badge_brightness = settings.product_sold_out_badge_background | color_brightness -%}
+    {%- assign product_custom_badge_brightness = settings.product_custom_badge_background | color_brightness -%}
+    {%- assign success_background = settings.success_color | color_mix: '#ffffff', 21 -%}
+    {%- assign warning_background = settings.warning_color | color_mix: '#ffffff', 12 -%}
+    {%- assign error_background = settings.error_color | color_mix: '#ffffff', 24 -%}
+
+    /* Overlay used for modal */
+    --page-overlay: 0 0 0 / 0.4;
+
+    /* We use the first scheme background as default */
+    --page-background: {{ settings.color_schemes[0].settings.background.rgb }};
+
+    /* Product colors */
+    --on-sale-text: {{ settings.product_on_sale_accent.rgb }};
+    --on-sale-badge-background: {{ settings.product_on_sale_accent.rgb }};
+    --on-sale-badge-text: {% if product_on_sale_accent_brightness < 150 %}255 255 255{% else %}0 0 0 / 0.65{% endif %};
+    --sold-out-badge-background: {{ settings.product_sold_out_badge_background.rgb }};
+    --sold-out-badge-text: {% if product_sold_out_badge_brightness < 150 %}255 255 255{% else %}0 0 0 / 0.65{% endif %};
+    --custom-badge-background: {{ settings.product_custom_badge_background.rgb }};
+    --custom-badge-text: {% if product_custom_badge_brightness < 150 %}255 255 255{% else %}0 0 0 / 0.65{% endif %};
+    --star-color: {{ settings.product_rating_color.rgb }};
+
+    /* Status colors */
+    --success-background: {{ success_background.rgb }};
+    --success-text: {{ settings.success_color.rgb }};
+    --warning-background: {{ warning_background.rgb }};
+    --warning-text: {{ settings.warning_color.rgb }};
+    --error-background: {{ error_background.rgb }};
+    --error-text: {{ settings.error_color.rgb }};
+  }
+
+  {%- for color_scheme in settings.color_schemes -%}
+    .color-scheme--{{ color_scheme.id }} {
+      /* Color settings */
+      {%- assign success_background = color_scheme.settings.success_color | color_mix: '#ffffff', 21 -%}
+      {%- assign warning_background = color_scheme.settings.warning_color | color_mix: '#ffffff', 12 -%}
+      {%- assign error_background = color_scheme.settings.error_color | color_mix: '#ffffff', 24 -%}
+
+      --accent: {{ color_scheme.settings.primary_button_background.rgb }};
+      --text-color: {{ color_scheme.settings.text_color.rgb }};
+      --background: {{ color_scheme.settings.background.rgb }} / {{ color_scheme.settings.background.alpha }};
+      --background-without-opacity: {{ color_scheme.settings.background.rgb }};
+      --background-gradient: {{ color_scheme.settings.background_gradient }};
+
+      {%- if color_scheme.settings.background_gradient != blank -%}
+        --border-color: {{ color_scheme.settings.text_color.rgb }} / 0.15;
+      {%- elsif color_scheme.settings.background == 'rgba(0,0,0,0)' -%}
+        --border-color: {{ color_scheme.settings.text_color.rgb }};
+      {%- else -%}
+        {%- assign border_color = color_scheme.settings.text_color | color_mix: color_scheme.settings.background, 15 -%}
+        --border-color: {{ border_color.rgb }};
+      {%- endif -%}
+
+      /* Button colors */
+      --button-background: {{ color_scheme.settings.primary_button_background.rgb }};
+      --button-text-color: {{ color_scheme.settings.primary_button_text_color.rgb }};
+
+      /* Circled buttons */
+      --circle-button-background: {{ color_scheme.settings.circle_button_background.rgb }};
+      --circle-button-text-color: {{ color_scheme.settings.circle_button_icon.rgb }};
+    }
+
+    {%- comment -%}
+    IMPLEMENTATION NOTE: when two sections A and B have the same color scheme, and that the section B is not separated by a border,
+                         we remove any padding top to prevent "double padding". This ensure a better flow of consecutive sections.
+    {%- endcomment -%}
+    {%- assign color_scheme_hash = color_scheme.settings.background_gradient | default: color_scheme.settings.background | md5 -%}
+
+    .shopify-section:has(.section-spacing.color-scheme--bg-{{ color_scheme_hash }}) + .shopify-section:has(.section-spacing.color-scheme--bg-{{ color_scheme_hash }}:not(.bordered-section)) .section-spacing {
+      padding-block-start: 0;
+    }
+  {%- endfor -%}
+
+  .color-scheme--dialog {
+      /* Color settings */
+      {%- assign color_scheme = settings.modal_color_scheme -%}
+
+      --accent: {{ color_scheme.settings.primary_button_background.rgb }};
+      --text-color: {{ color_scheme.settings.text_color.rgb }};
+      --background: {{ color_scheme.settings.background.rgb }} / {{ color_scheme.settings.background.alpha }};
+      --background-without-opacity: {{ color_scheme.settings.background.rgb }};
+      --background-gradient: {{ color_scheme.settings.background_gradient }};
+
+      {%- if color_scheme.settings.background_gradient != blank -%}
+        --border-color: {{ color_scheme.settings.text_color.rgb }} / 0.15;
+      {%- elsif color_scheme.settings.background == 'rgba(0,0,0,0)' -%}
+        --border-color: {{ color_scheme.settings.text_color.rgb }};
+      {%- else -%}
+        {%- assign border_color = color_scheme.settings.text_color | color_mix: color_scheme.settings.background, 15 -%}
+        --border-color: {{ border_color.rgb }};
+      {%- endif -%}
+
+      /* Button colors */
+      --button-background: {{ color_scheme.settings.primary_button_background.rgb }};
+      --button-text-color: {{ color_scheme.settings.primary_button_text_color.rgb }};
+
+      /* Circled buttons */
+      --circle-button-background: {{ color_scheme.settings.circle_button_background.rgb }};
+      --circle-button-text-color: {{ color_scheme.settings.circle_button_icon.rgb }};
+    }
+</style>

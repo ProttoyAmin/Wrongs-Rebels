@@ -1,0 +1,89 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+PRODUCT CARD PLACEHOLDER COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+This component is used to show a placeholder card of a product. It accepts nearly the same information, but display
+fake information instead.
+
+********************************************
+Supported variables
+********************************************
+
+* reveal: if set to true, the card will be revealed on scroll through animation
+* loop_index: the loop index to show a placeholder image (pass the forloop.index0)
+* show_rating: show or not the rating. If nothing is set, the theme uses the default product card setting
+* show_vendor: show or not the vendor. If nothing is set, the theme uses the default product card setting
+* hide_product_information: if set to true, all content (vendor, badge, title...) are not rendered, to create image-based grid
+{%- endcomment -%}
+
+{%- liquid
+  if hide_product_information
+    assign show_rating = false
+    assign show_vendor = false
+    assign show_title = false
+    assign show_prices = false
+  else
+    assign show_rating = show_rating | default: settings.show_product_rating, allow_false: true
+    assign show_vendor = show_vendor | default: settings.show_vendor, allow_false: true
+    assign show_title = true
+    assign show_prices = true
+  endif
+-%}
+
+<product-card class="product-card" {% if reveal %}reveal-on-scroll="true"{% endif %}>
+  {%- comment -%}
+  --------------------------------------------------------------------------------------------------------------------
+  PRODUCT MEDIA
+  --------------------------------------------------------------------------------------------------------------------
+  {%- endcomment -%}
+
+  <div class="product-card__figure">
+    <a href="#" class="product-card__media">
+      {%- capture product_placeholder -%}product-{{ loop_index | modulo: 6 | plus: 1 | default: 1 }}{%- endcapture -%}
+      {{- product_placeholder | placeholder_svg_tag: 'product-card__image product-card__image--primary placeholder' -}}
+    </a>
+  </div>
+
+  {%- comment -%}
+  --------------------------------------------------------------------------------------------------------------------
+  PRODUCT INFO
+  --------------------------------------------------------------------------------------------------------------------
+  {%- endcomment -%}
+
+  <div class="product-card__info empty:hidden">
+    {%- assign text_class = '' -%}
+
+    {%- if settings.product_card_text_font == 'heading' -%}
+      {%- assign text_class = 'h6' -%}
+    {%- endif -%}
+
+    {%- if show_title or show_prices or show_vendor -%}
+      <div class="v-stack justify-items-center gap-2">
+        {%- if show_vendor -%}
+          <a href="#" class="vendor smallcaps {% if settings.product_card_text_font == 'heading' %}heading{% endif %}">
+            {{- 'general.on_boarding.product_vendor' | t -}}
+          </a>
+        {%- endif -%}
+
+        {%- if show_title or show_prices -%}
+          <div class="v-stack justify-items-center gap-1">
+            {%- if show_title -%}
+              <a href="#" class="product-title {% if text_class != blank %}{{ text_class }}{% endif %}">
+                {{- 'general.on_boarding.product_title' | t -}}
+              </a>
+            {%- endif -%}
+
+            {%- if show_prices -%}
+              {%- render 'price-list', context: 'card' -%}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if show_rating -%}
+      {%- render 'product-rating', show_placeholder: true, display_mode: settings.product_rating_mode -%}
+    {%- endif -%}
+  </div>
+</product-card>

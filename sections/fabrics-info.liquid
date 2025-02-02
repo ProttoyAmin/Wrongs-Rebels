@@ -1,0 +1,81 @@
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+  {% for block in section.blocks %}
+    {% if block.type == 'info_block' %}
+      <div style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; text-align: center; min-width: 200px;">
+        <!-- Dot and Title -->
+        <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 10px;">
+          <span style="display: inline-block; width: 10px; height: 10px; background-color: {{ block.settings.dot_color }}; border-radius: 50%;"></span>
+          <strong style="font-size: 14px; color: #000; text-transform: uppercase;">
+            {{ block.settings.title }}
+          </strong>
+        </div>
+        <!-- Button Link -->
+        <a href="{{ block.settings.link_url }}" style="color: #666; text-decoration: none; font-size: 12px;">
+          {{ block.settings.button_text }} <span style="display: inline-block; font-size: 14px;">↗</span>
+        </a>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Custom Content Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "info_block",
+      "name": "Info Block",
+      "settings": [
+        {
+          "type": "color",
+          "id": "dot_color",
+          "label": "Dot Color",
+          "default": "#00FF00"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Sample Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Button Link"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Learn More"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Content Section",
+      "category": "Custom",
+      "blocks": [
+        {
+          "type": "info_block",
+          "settings": {
+            "dot_color": "#00FF00",
+            "title": "HEAVY WEIGHT FABRIC",
+            "button_text": "Learn More"
+          }
+        },
+        {
+          "type": "info_block",
+          "settings": {
+            "dot_color": "#00FF00",
+            "title": "CONTEMPORARY BAGGY FIT",
+            "button_text": "Learn More"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

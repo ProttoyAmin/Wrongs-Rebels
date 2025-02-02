@@ -1,0 +1,33 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+VOLUME PRICING TABLE
+----------------------------------------------------------------------------------------------------------------------
+
+This component renders the volume price table for a given variant. This feature is currently only available for
+B2B context for Shopify Plus merchants.
+
+********************************************
+Supported variables
+********************************************
+
+* variant: the variant for which the quantity breaks are displayed
+{%- endcomment -%}
+
+{%- if variant.quantity_price_breaks.size > 0 -%}
+  <table class="table table--sm table--bordered">
+    <caption>{{ 'product.volume_pricing.title' | t }}</caption>
+
+    <tbody>
+      {%- for quantity_break in variant.quantity_price_breaks -%}
+        <tr>
+          <td>{{ 'product.volume_pricing.minimum' | t: minimum_quantity: quantity_break.minimum_quantity }}</td>
+
+          <td>
+            {%- assign break_price = quantity_break.price | money -%}
+            {{- 'product.volume_pricing.price_at_each' | t: price: break_price -}}
+          </td>
+        </tr>
+      {%- endfor -%}
+    </tbody>
+  </table>
+{%- endif -%}

@@ -1,0 +1,118 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+SHADOW DOM TEMPLATES
+----------------------------------------------------------------------------------------------------------------------
+
+This file defines various templates that we use for Shadow DOM (it is for now limited to drawer and popover). You can
+override those if you wish to change the default layout of those elements. However you should be very careful as it
+may break things in an unintended way.
+
+Implementation note: most of those templates wrap the content inside a "base" part. This is the one that you should
+use to provide the base style for your components. This allows the various web components to be able to efficiently
+change the display CSS property without impacting your styles.
+{%- endcomment -%}
+
+{%- comment -%}
+DRAWER: a drawer is a specialized dialog allowing to show extra piece of information to the user, and that requires
+user attention. A drawer opens using a slide effect (on desktop) from left or right.
+{%- endcomment -%}
+<template id="drawer-default-template">
+  <div part="base">
+    <div part="overlay"></div>
+
+    <div part="content">
+      <header part="header">
+        <slot name="header"></slot>
+
+        <dialog-close-button style="display: contents">
+          <button type="button" part="close-button tap-area" aria-label="{{ 'general.accessibility.close' | t | escape }}">
+            {%- render 'icon' with 'close', width: 14 -%}
+          </button>
+        </dialog-close-button>
+      </header>
+
+      <div part="body">
+        <slot></slot>
+      </div>
+
+      <footer part="footer">
+        <slot name="footer"></slot>
+      </footer>
+    </div>
+  </div>
+</template>
+
+{%- comment -%}
+MODAL: a modal is a specialized dialog allowing to show extra piece of information to the user, and that requires
+user attention. Contrary to the drawer which opens using a slide effect from one side of the page, a modal typically
+opens at the middle of the page, and therefore provides a bigger impact.
+{%- endcomment -%}
+<template id="modal-default-template">
+  <div part="base">
+    <div part="overlay"></div>
+
+    <div part="content">
+      <header part="header">
+        <slot name="header"></slot>
+
+        <dialog-close-button style="display: contents">
+          <button type="button" part="close-button tap-area" aria-label="{{ 'general.accessibility.close' | t | escape }}">
+            {%- render 'icon' with 'close', width: 14 -%}
+          </button>
+        </dialog-close-button>
+      </header>
+
+      <div part="body">
+        <slot></slot>
+      </div>
+    </div>
+  </div>
+</template>
+
+{%- comment -%}
+POPOVER: a popover is a kind of specialized dialog that requires user attention (to do a selection for instance) but
+that does not open full width (it stays in the flow of the page).
+{%- endcomment -%}
+<template id="popover-default-template">
+  <div part="base">
+    <div part="overlay"></div>
+
+    <div part="content">
+      <header part="header">
+        <slot name="header"></slot>
+
+        <dialog-close-button style="display: contents">
+          <button type="button" part="close-button tap-area" aria-label="{{ 'general.accessibility.close' | t | escape }}">
+            {%- render 'icon' with 'close', width: 14 -%}
+          </button>
+        </dialog-close-button>
+      </header>
+
+      <div part="body">
+        <slot></slot>
+      </div>
+    </div>
+  </div>
+</template>
+
+{%- comment -%}
+HEADER SEARCH: this is the header search when the user click on the search icon
+{%- endcomment -%}
+<template id="header-search-default-template">
+  <div part="base">
+    <div part="overlay"></div>
+
+    <div part="content">
+      <slot></slot>
+    </div>
+  </div>
+</template>
+
+{%- comment -%} VIDEO MEDIA {%- endcomment -%}
+<template id="video-media-default-template">
+  <slot></slot>
+
+  <svg part="play-button" fill="none" width="48" height="48" viewBox="0 0 48 48">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M48 24c0 13.255-10.745 24-24 24S0 37.255 0 24 10.745 0 24 0s24 10.745 24 24Zm-18 0-9-6.6v13.2l9-6.6Z" fill="var(--play-button-background, {{ settings.default_color_scheme.settings.background }})"/>
+  </svg>
+</template>

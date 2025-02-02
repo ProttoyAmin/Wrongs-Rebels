@@ -1,0 +1,86 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+PRODUCT RATING BADGE
+----------------------------------------------------------------------------------------------------------------------
+
+This component generates a review badge from the product metafields information.
+
+********************************************
+Supported variables
+********************************************
+
+* product: the product from which ratings are extracted
+* show_empty: if set to true, the theme shows a 0.0 if there are no rating yet
+* show_placeholder: if set to true, show random value (useful for the product card placeholder)
+* show_single_star: if set to true, only one star is shown (otherwise, the number of scale)
+* display_mode: either "rating" (e.g.: 3.5) or "count" (e.g.: 4 reviews). Default to "rating" if none is passed
+{%- endcomment -%}
+
+{%- liquid
+  if product.metafields.reviews.rating.value != blank
+    assign rating_value = product.metafields.reviews.rating.value.rating | round: 1
+    assign rating_count = product.metafields.reviews.rating_count.value
+    assign rating_max = product.metafields.reviews.rating.value.scale_max
+  elsif show_empty
+    assign rating_value = 0.0
+    assign rating_count = 0
+    assign rating_max = 5
+  elsif show_placeholder
+    assign rating_value = 4.5
+    assign rating_count = 2
+    assign rating_max = 5
+  else
+    assign hide_rating = true
+  endif
+
+  assign rating_decimal = 0
+  assign decimal = rating_value | modulo: 1
+
+  if decimal >= 0.3 and decimal <= 0.7
+    assign rating_decimal = 0.5
+  elsif decimal > 0.7
+    assign rating_decimal = 1
+  endif
+-%}
+
+{%- unless hide_rating -%}
+  <span class="rating-badge" title="{{ 'product.rating_count' | t: count: rating_count }}">
+    <div class="rating-badge__stars" role="img" aria-label="{{ 'general.rating.info' | t: rating_value: rating_value, rating_max: rating_max }}">
+      {%- liquid
+        if show_single_star
+          if rating_count == 0
+            render 'icon' with 'star-rating-empty'
+          else
+            render 'icon' with 'star-rating'
+          endif
+        else
+          for i in (1..rating_max)
+            if rating_count == 0
+              render 'icon' with 'star-rating-empty'
+            else
+              if i <= rating_value
+                render 'icon' with 'star-rating'
+              else
+                if rating_decimal == 0.5
+                  render 'icon' with 'star-rating-half'
+                elsif rating_decimal == 1
+                  render 'icon' with 'star-rating'
+                else
+                  render 'icon' with 'star-rating-empty'
+                endif
+
+                assign rating_decimal = false
+              endif
+            endif
+          endfor
+        endif
+      -%}
+    </div>
+
+    {%- if display_mode == 'count' -%}
+      <span class="smallcaps text-xxs text-subdued">({{ rating_count }})</span>
+    {%- else -%}
+      <span class="smallcaps text-xxs text-subdued">({{ rating_value }})</span>
+    {%- endif -%}
+  </span>
+{%- endunless -%}

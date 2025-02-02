@@ -1,0 +1,222 @@
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="section-spacing section-spacing--tight color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }}">
+  {%- if cart.empty? -%}
+    <div class="container container--xs">
+      <div class="empty-state">
+        <div class="prose">
+          <h1 class="h4">{{ 'cart.general.title' | t }}</h1>
+          <p>{{ 'cart.general.empty' | t }}</p>
+
+          {%- assign button_content = 'cart.general.continue_shopping' | t -%}
+          {%- render 'button', content: button_content, href: settings.cart_empty_cart_link -%}
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="container container--sm">
+      <div class="section-stack">
+        <div class="section-header justify-self-center text-center">
+          <div class="v-stack gap-4">
+            <h1 class="h2">{{ 'cart.general.title' | t }}</h1>
+
+            {%- if settings.cart_show_free_shipping_bar -%}
+              {%- render 'free-shipping-bar' -%}
+            {%- endif -%}
+          </div>
+        </div>
+
+        <form action="{{ routes.cart_url }}" method="POST" class="cart-page">
+          <input type="hidden" name="attributes[products_mobile_grid_mode]" value="">
+          <input type="hidden" name="attributes[products_desktop_grid_mode]" value="">
+
+          <div class="v-stack gap-6">
+            {%- comment -%}
+            ----------------------------------------------------------------------------------------------------------------
+            ORDER SUMMARY
+            ----------------------------------------------------------------------------------------------------------------
+            {%- endcomment -%}
+            <table class="order-summary table--reduce-border">
+              <thead class="order-summary__header">
+                <tr>
+                  <th>{{ 'cart.order.product' | t }}</th>
+                  <th class="text-center">{{ 'cart.order.quantity' | t }}</th>
+                  <th class="text-end">{{ 'cart.order.total' | t }}</th>
+                </tr>
+              </thead>
+
+              <tbody class="order-summary__body">
+                {%- for line_item in cart.items -%}
+                  <tr>
+                    <td>{%- render 'line-item', line_item: line_item, show_quantity_selector: true -%}</td>
+
+                    <td class="text-center">
+                      <line-item-quantity class="v-stack justify-items-center gap-2">
+                        {%- render 'quantity-selector', line_item: line_item, size: 'sm', add_updates: true -%}
+                        <a href="{{ line_item.url_to_remove }}" class="link text-xs" aria-label="{{ 'cart.order.remove_with_title' | t: title: line_item.title | escape }}">
+                          {{- 'cart.order.remove' | t -}}
+                        </a>
+                      </line-item-quantity>
+                    </td>
+
+                    <td class="text-end">
+                      {%- if settings.currency_code_enabled -%}
+                        {{- line_item.final_line_price | money_with_currency -}}
+                      {%- else -%}
+                        {{- line_item.final_line_price | money -}}
+                      {%- endif -%}
+                    </td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+
+            {%- comment -%}
+            ----------------------------------------------------------------------------------------------------------------
+            CART FOOTER
+            ----------------------------------------------------------------------------------------------------------------
+            {%- endcomment -%}
+            <div class="cart-footer">
+              {%- if section.settings.show_cart_note -%}
+                <cart-note class="cart-note">
+                  {%- assign order_note = 'cart.general.add_order_note' | t -%}
+                  {%- assign placeholder = 'cart.general.note_placeholder' | t -%}
+                  {%- render 'input', name: 'note', multiline: 3, label: order_note, value: cart.note, placeholder: placeholder, show_label_as_block: true -%}
+                </cart-note>
+              {%- endif -%}
+
+              <div class="cart-recap">
+                {%- comment -%}Give apps a special hook to add features on the recap (such as capturing delivery dates){%- endcomment -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.type == '@app' -%}
+                    {%- render block -%}
+                  {%- endif -%}
+                {%- endfor -%}
+
+                {%- if section.settings.show_order_weight -%}
+                  <div class="h-stack justify-start gap-2">
+                    <span class="text-subdued">{{ 'cart.general.weight' | t }}:</span>
+                    <span class="text-subdued">{{ cart.total_weight | weight_with_unit }}</span>
+                  </div>
+                {%- endif -%}
+
+                {%- if cart.items_subtotal_price != cart.total_price -%}
+                  <div class="h-stack justify-start gap-2">
+                    <span class="text-subdued">{{ 'cart.general.subtotal' | t }}:</span>
+                    <span class="text-subdued">
+                      {%- if settings.currency_code_enabled -%}
+                        {{- cart.items_subtotal_price | money_with_currency -}}
+                      {%- else -%}
+                        {{- cart.items_subtotal_price | money -}}
+                      {%- endif -%}
+                    </span>
+                  </div>
+                {%- endif -%}
+
+                {% for discount_application in cart.cart_level_discount_applications %}
+                  <div class="h-stack justify-start gap-2">
+                    <span class="discount-badge text-xs">{%- render 'icon' with 'discount', width: 12 -%} {{- discount_application.title -}}</span>
+                    <span class="text-subdued">-{{ discount_application.total_allocated_amount | money }}</span>
+                  </div>
+                {% endfor %}
+
+                <div class="h-stack justify-start gap-2">
+                  <span class="text-lg">{{ 'cart.general.total' | t }}:</span>
+                  <span class="text-lg">{{- cart.total_price | money_with_currency -}}</span>
+                </div>
+
+                {%- if section.settings.show_shipping_text -%}
+                  {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+                    <p class="text-subdued text-sm">{{ 'cart.general.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}</p>
+                  {%- elsif cart.taxes_included -%}
+                    <p class="text-subdued text-sm">{{ 'cart.general.taxes_included_but_shipping_at_checkout' | t }}</p>
+                  {%- elsif shop.shipping_policy.body != blank -%}
+                    <p class="text-subdued text-sm">{{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}</p>
+                  {%- else -%}
+                    <p class="text-subdued text-sm">{{ 'cart.general.taxes_and_shipping_at_checkout' | t }}</p>
+                  {%- endif -%}
+                {%- endif -%}
+
+                {%- if section.settings.show_accelerated_buttons and additional_checkout_buttons -%}
+                  <div class="additional-checkout-buttons additional-checkout-buttons--vertical">
+                    {{- content_for_additional_checkout_buttons -}}
+                  </div>
+                {% endif %}
+
+                <noscript>
+                  {%- assign update_button = 'cart.general.update_cart' | t -%}
+                  {%- render 'button', type: 'submit', content: update_button, style: 'outline' -%}
+                </noscript>
+
+                {%- assign checkout_button = 'cart.general.checkout' | t -%}
+                {%- render 'button', type: 'submit', content: checkout_button, name: 'checkout' -%}
+              </div>
+            </div>
+          </div>
+
+          {%- comment -%}
+          ----------------------------------------------------------------------------------------------------------------
+          SHIPPING ESTIMATOR
+          ----------------------------------------------------------------------------------------------------------------
+          {%- endcomment -%}
+
+          {%- if section.settings.show_shipping_estimator and cart.requires_shipping -%}
+            {%- render 'shipping-estimator' -%}
+          {%- endif -%}
+        </form>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_cart.name",
+  "class": "shopify-section--main-cart",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_note",
+      "label": "t:sections.main_cart.show_cart_note",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_order_weight",
+      "label": "t:sections.main_cart.show_order_weight",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_text",
+      "label": "t:sections.main_cart.show_shipping_text",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated_buttons",
+      "label": "t:sections.main_cart.show_accelerated_buttons",
+      "info": "t:sections.main_cart.show_accelerated_buttons_info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_estimator",
+      "label": "t:sections.main_cart.show_shipping_estimator",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

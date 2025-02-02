@@ -1,0 +1,302 @@
+{%- if section.blocks.size > 0 -%}
+  {%- assign section_carousel_id = 'section-carousel-' | append: section.id -%}
+
+  <style>
+    #shopify-section-{{ section.id }} {
+      {%- assign first_image = section.blocks | map: 'settings' | map: 'image' | compact | first -%}
+
+      --images-with-text-scroll-master-image-ratio: {{ first_image.aspect_ratio | default: 1 }};
+      --images-with-text-scroll-text-alignment: {{ section.settings.text_alignment }};
+
+      {%- if section.settings.overlay_color != 'rgba(0,0,0,0)' -%}
+        --images-with-text-scroll-overlay: {{ section.settings.overlay_color.rgb }} / {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+      {%- endif -%}
+    }
+  </style>
+
+  <images-with-text-scroll id="{{ section_carousel_id }}" class="images-with-text-scroll {% if section.settings.image_position == 'end' %}images-with-text-scroll--reverse{% endif %} color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+    {%- if section.settings.background_image or section.settings.mobile_background_image -%}
+      <picture class="contents {% if section.settings.background_image == blank %}md:hidden{% endif %}">
+        {%- if section.settings.mobile_background_image -%}
+          <source
+              media="(max-width: 699px)"
+              srcset="{{ section.settings.mobile_background_image | image_url: width: '400x' }} 400w, {{ section.settings.mobile_background_image | image_url: width: '600x' }} 600w, {{ section.settings.mobile_background_image | image_url: width: '800x' }} 800w, {{ section.settings.mobile_background_image | image_url: width: '1000x' }} 1000w"
+              width="{{ section.settings.mobile_background_image.width }}"
+              height="{{ section.settings.mobile_background_image.height }}"
+          >
+        {%- endif -%}
+
+        {%- assign background_image = section.settings.background_image | default: section.settings.mobile_background_image -%}
+
+        {{- background_image | image_url: width: background_image.width | image_tag: widths: '200,300,400,500,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000', class: 'images-with-text-scroll__image-background' -}}
+      </picture>
+    {%- endif -%}
+
+    <div class="images-with-text-scroll__container container container--md">
+      {%- assign images = section.blocks | map: 'settings' | map: 'image' | compact -%}
+
+      {%- for block in section.blocks -%}
+        <div class="images-with-text-scroll__item {% if forloop.first %}is-selected{% endif %}">
+          {%- liquid
+            if images.size == 0 and forloop.first
+              echo 'image' | placeholder_svg_tag: 'images-with-text-scroll__image placeholder'
+            elsif block.settings.image
+              assign loading = nil
+
+              unless forloop.first
+                assign loading = 'lazy'
+              endunless
+
+              echo block.settings.image | image_url: width: block.settings.image.width | image_tag: loading: loading, sizes: '(max-width: 699px) 210px, (max-width: 999px) 440px, 575px', widths: '210,420,440,575,630,880,1150,1320,1725', style: 'object-position: inherit', class: 'images-with-text-scroll__image'
+            endif
+          -%}
+
+          <div class="images-with-text-scroll__text" {{ block.shopify_attributes }}>
+            <div class="prose">
+              {%- if block.settings.subheading != blank -%}
+                <p class="h6">{{ block.settings.subheading }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.title != blank -%}
+                <p class="{{ section.settings.heading_tag }}">{{ block.settings.title }}</p>
+              {%- endif -%}
+
+              {{- block.settings.content -}}
+
+              {%- if block.settings.link_text != blank -%}
+                {%- render 'button', href: block.settings.link_url, content: block.settings.link_text, style: block.settings.link_style -%}
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+
+      {%- if section.blocks.size > 1 -%}
+        <carousel-navigation aria-controls="{{ section_carousel_id }}" class="page-dots md:hidden">
+          {%- for i in (1..section.blocks.size) -%}
+            <button class="tap-area" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+              <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: forloop.index }}</span>
+            </button>
+          {%- endfor -%}
+        </carousel-navigation>
+      {%- endif -%}
+    </div>
+  </images-with-text-scroll>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.images_with_text_scroll.name",
+  "class": "shopify-section--images-with-text-scroll",
+  "tag": "section",
+  "max_blocks": 10,
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.images_with_text_scroll.instructions"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:global.image.background_image",
+      "info": "t:sections.images_with_text_scroll.background_image_info"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_background_image",
+      "label": "t:global.image.mobile_background_image",
+      "info": "t:sections.images_with_text_scroll.mobile_background_image_info"
+    },
+    {
+      "type": "header",
+      "content": "t:global.text.content"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:sections.images_with_text_scroll.image_position",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:global.position.left"
+        },
+        {
+          "value": "end",
+          "label": "t:global.position.right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:global.text.alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:global.position.left"
+        },
+        {
+          "value": "center",
+          "label": "t:global.position.center"
+        },
+        {
+          "value": "end",
+          "label": "t:global.position.right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "t:global.text.heading_style",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "header",
+      "content": "t:global.colors.category"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:global.colors.overlay_color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:global.colors.overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_with_text",
+      "name": "t:sections.images_with_text_scroll.blocks.image_with_text.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:global.image.image",
+          "info": "t:sections.images_with_text_scroll.blocks.image_with_text.image_info"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "subheading",
+          "label": "t:global.text.subheading"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "t:global.text.heading",
+          "default": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:global.text.content",
+          "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>",
+          "info": "t:sections.images_with_text_scroll.blocks.image_with_text.content_info"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "link_text",
+          "label": "t:global.text.button_text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:global.text.button_link"
+        },
+        {
+          "type": "select",
+          "id": "link_style",
+          "label": "t:global.text.button_style",
+          "options": [
+            {
+              "value": "outline",
+              "label": "t:global.text.link_style_options.outline"
+            },
+            {
+              "value": "solid",
+              "label": "t:global.text.link_style_options.solid"
+            },
+            {
+              "value": "link",
+              "label": "t:global.text.link_style_options.link"
+            }
+          ],
+          "default": "solid"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.images_with_text_scroll.presets.images_with_text_scroll.name",
+      "blocks": [
+        {
+          "type": "image_with_text",
+          "settings": {
+            "title": "#1",
+            "content": "<p>Welcome your customers to your store by sharing temporary offers or explaining to them what your products are about.</p>"
+          }
+        },
+        {
+          "type": "image_with_text",
+          "settings": {
+            "title": "#2",
+            "content": "<p>Create trust with your customers by explaining the story of your brand. Share your values or what is important to you.</p>"
+          }
+        },
+        {
+          "type": "image_with_text",
+          "settings": {
+            "title": "#3",
+            "content": "<p>Share information about your product with your customers. Describe a product, and share info about your production process...</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

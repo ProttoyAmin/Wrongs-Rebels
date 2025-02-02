@@ -1,0 +1,183 @@
+{%- comment -%}
+  ----------------------------------------------------------------------------------------------------------------------
+  PRODUCT PRICE
+  ----------------------------------------------------------------------------------------------------------------------
+
+  Render a list of price for a product, variant or line item.
+
+  ********************************************
+  Supported variables
+  ********************************************
+
+  * product: if provided, the prices are rendered for the whole product
+  * variant: if provided, then only the price from this variant is rendered
+  * line_item: if provided, then the price from this line item are rendered (used on cart or order)
+  * hide_unit_price: if set to true unit prices are hidden (mostly useful for size constrained elements)
+  * context: can be "product", "line_item" or "card". This controls how the prices are displayed (using the correct sizes)
+{%- endcomment -%}
+
+{%- liquid
+  case context
+    when 'card', 'line_item'
+      assign base_text_class = ''
+
+      if settings.product_card_text_font == 'heading'
+        assign base_text_class = 'h6 '
+      endif
+
+      assign regular_price_classes = base_text_class | append: 'text-subdued'
+      assign on_sale_price_classes = base_text_class | append: 'text-on-sale'
+      assign compare_at_price_classes = base_text_class | append: 'text-subdued line-through'
+      assign unit_price_classes = base_text_class | append: 'text-subdued'
+
+    when 'product'
+      assign regular_price_classes = base_text_class | append: 'h4 text-subdued'
+      assign on_sale_price_classes = base_text_class | append: 'h4 text-on-sale'
+      assign compare_at_price_classes = base_text_class | append: 'h5 text-subdued line-through'
+      assign unit_price_classes = base_text_class | append: 'h6 text-subdued'
+  endcase
+-%}
+
+<price-list class="price-list {% if context == 'product' %}price-list--product{% endif %}">
+  {%- if variant != blank -%}
+    {%- comment -%}
+      --------------------------------------------------------------------------------------------------------------------
+      VARIANT CASE (used on product page, quick view...)
+      --------------------------------------------------------------------------------------------------------------------
+    {%- endcomment -%}
+    <sale-price class="{% if variant.compare_at_price > variant.price %}{{ on_sale_price_classes }}{% else %}{{ regular_price_classes }}{% endif %}">
+      <span class="sr-only">{{ 'product.price.sale_price' | t }}</span>
+
+      {%- if settings.currency_code_enabled -%}
+        {{- variant.price | money_with_currency -}}
+      {%- else -%}
+        {{- variant.price | money -}}
+      {%- endif -%}
+    </sale-price>
+
+    {%- if variant.compare_at_price > variant.price -%}
+      <compare-at-price class="{{ compare_at_price_classes }}">
+        <span class="sr-only">{{ 'product.price.regular_price' | t }}</span>
+
+        {%- if settings.currency_code_enabled -%}
+          {{- variant.compare_at_price | money_with_currency -}}
+        {%- else -%}
+          {{- variant.compare_at_price | money -}}
+        {%- endif -%}
+      </compare-at-price>
+    {%- endif -%}
+  {%- elsif line_item != blank -%}
+    {%- comment -%}
+      --------------------------------------------------------------------------------------------------------------------
+      LINE ITEM CASE (used on cart, order page...)
+      --------------------------------------------------------------------------------------------------------------------
+    {%- endcomment -%}
+    <sale-price class="{% if line_item.original_price > line_item.final_price %}{{ on_sale_price_classes }}{% else %}{{ regular_price_classes }}{% endif %}">
+      <span class="sr-only">{{ 'product.price.sale_price' | t }}</span>
+
+      {%- if settings.currency_code_enabled -%}
+        {{- line_item.final_price | money_with_currency -}}
+      {%- else -%}
+        {{- line_item.final_price | money -}}
+      {%- endif -%}
+    </sale-price>
+
+    {%- if line_item.original_price > line_item.final_price -%}
+      <compare-at-price class="{{ compare_at_price_classes }}">
+        <span class="sr-only">{{ 'product.price.regular_price' | t }}</span>
+
+        {%- if settings.currency_code_enabled -%}
+          {{- line_item.original_price | money_with_currency -}}
+        {%- else -%}
+          {{- line_item.original_price | money -}}
+        {%- endif -%}
+      </compare-at-price>
+    {%- endif -%}
+  {%- elsif product != blank -%}
+    {%- comment -%}
+      --------------------------------------------------------------------------------------------------------------------
+      PRODUCT CASE (used on card)
+      --------------------------------------------------------------------------------------------------------------------
+    {%- endcomment -%}
+    {%- liquid
+      if product.price_varies and settings.product_price_strategy != 'from_price'
+        assign variant = product.variants | sort: 'price' | last | default: product.selected_or_first_available_variant
+      else
+        assign variant = product.variants | sort: 'price' | first | default: product.selected_or_first_available_variant
+      endif
+
+      if settings.currency_code_enabled
+        assign variant_price = variant.price | money_with_currency
+        assign variant_compare_at_price = variant.compare_at_price | money_with_currency
+      else
+        assign variant_price = variant.price | money
+        assign variant_compare_at_price = variant.compare_at_price | money
+      endif
+    -%}
+
+    {%- if product.price_varies -%}
+      {%- assign is_variant_on_sale = false -%}
+
+      {%- if variant.price < variant.compare_at_price -%}
+        {%- assign is_variant_on_sale = true -%}
+      {%- endif -%}
+
+      {%- if settings.product_price_strategy == 'from_price' -%}
+        <sale-price class="{% if is_variant_on_sale %}{{ on_sale_price_classes }}{% else %}{{ regular_price_classes }}{% endif %}">
+          <span class="sr-only">{{ 'product.price.sale_price' | t }}</span>
+          {{- 'product.price.from_price_html' | t: price_min: variant_price -}}
+        </sale-price>
+      {%- else -%}
+        <sale-price class="{{ on_sale_price_classes }}">
+          <span class="sr-only">{{ 'product.price.sale_price' | t }}</span>
+          {{- variant_price -}}
+        </sale-price>
+      {%- endif -%}
+    {%- else -%}
+      <sale-price class="{% if variant.price < variant.compare_at_price %}{{ on_sale_price_classes }}{% else %}{{ regular_price_classes }}{% endif %}">
+        <span class="sr-only">{{ 'product.price.sale_price' | t }}</span>
+        {{- variant_price -}}
+      </sale-price>
+    {%- endif -%}
+
+    {%- if variant.price < variant.compare_at_price -%}
+      <compare-at-price class="{{ compare_at_price_classes }}">
+        <span class="sr-only">{{ 'product.price.regular_price' | t }}</span>
+        {{- variant_compare_at_price -}}
+      </compare-at-price>
+    {%- endif -%}
+  {%- else -%}
+    {%- comment -%}
+      --------------------------------------------------------------------------------------------------------------------
+      PLACEHOLDER CASE (used on featured product section for instance)
+      --------------------------------------------------------------------------------------------------------------------
+    {%- endcomment -%}
+
+    <sale-price class="{{ regular_price_classes }}">
+      <span class="sr-only">{{ 'product.price.sale_price' | t }}</span>
+
+      {%- if settings.currency_code_enabled -%}
+        {{- 4999 | money_with_currency -}}
+      {%- else -%}
+        {{- 4999 | money -}}
+      {%- endif -%}
+    </sale-price>
+  {%- endif -%}
+
+  {%- unless hide_unit_price -%}
+    {%- assign unit_price_item = variant | default: line_item | default: product.selected_or_first_available_variant -%}
+
+    {%- if unit_price_item.unit_price -%}
+      <unit-price class="{{ unit_price_classes }}">
+        {%- assign unit_price_measurement = unit_price_item.unit_price_measurement -%}
+
+        {%- if unit_price_measurement.reference_value != 1 -%}
+          {%- assign reference_value = unit_price_measurement.reference_value -%}
+        {%- endif -%}
+
+        ({{ unit_price_item.unit_price | money }}/{{ reference_value -}}
+        {{- unit_price_measurement.reference_unit }})
+      </unit-price>
+    {%- endif -%}
+  {%- endunless -%}
+</price-list>

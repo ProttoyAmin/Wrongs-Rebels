@@ -1,0 +1,67 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+SOCIAL MEDIA
+----------------------------------------------------------------------------------------------------------------------
+
+Output a list of social media icons based on the social URL settings.
+
+* layout: either support "list" or "block" (default to list)
+{%- endcomment -%}
+
+{%- capture social_media -%}
+  {%- if settings.social_facebook != blank or shop.brand.metafields.social_links.facebook != blank -%}
+    <li class="social-media__item branding-colors--facebook">
+      <a href="https://www.facebook.com/share/15MSqxmk3D/?mibextid=wwXIfr">
+        {%- render 'icon' with 'facebook' -%}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if settings.social_instagram != blank or shop.brand.metafields.social_links.instagram != blank -%}
+    <li class="social-media__item branding-colors--instagram">
+      <a href="https://www.instagram.com/wrongsandrebels?igsh=ZnNmeTY0MmRlZXVu">
+        {%- render 'icon' with 'instagram' -%}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if settings.social_tiktok != blank or shop.brand.metafields.social_links.tiktok != blank -%}
+    <li class="social-media__item branding-colors--tiktok">
+      <a href="{{ settings.social_tiktok | default: shop.brand.metafields.social_links.tiktok }}" class="tap-area" target="_blank" rel="noopener" aria-label="{{ 'general.social.follow_on' | t: social_media: 'TikTok' }}">
+        {%- render 'icon' with 'tiktok' -%}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if settings.social_vimeo != blank or shop.brand.metafields.social_links.vimeo != blank -%}
+    <li class="social-media__item branding-colors--vimeo">
+      <a href="{{ settings.social_vimeo | default: shop.brand.metafields.social_links.vimeo }}" class="tap-area" target="_blank" rel="noopener" aria-label="{{ 'general.social.follow_on' | t: social_media: 'Vimeo' }}">
+        {%- render 'icon' with 'vimeo' -%}
+      </a>
+    </li>
+  {%- endif -%}
+
+
+  {%- if settings.social_whatsapp != blank -%}
+    <li class="social-media__item branding-colors--whatsapp">
+      <a href="{{ settings.social_whatsapp }}" class="tap-area" target="_blank" rel="noopener" aria-label="{{ 'general.social.follow_on' | t: social_media: 'WhatsApp' }}">
+        {%- render 'icon' with 'whatsapp' -%}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if settings.social_tumblr != blank or shop.brand.metafields.social_links.tumblr != blank -%}
+    <li class="social-media__item branding-colors--tumblr">
+      <a href="{{ settings.social_tumblr | default: shop.brand.metafields.social_links.tumblr }}" class="tap-area"  target="_blank" rel="noopener" aria-label="{{ 'general.social.follow_on' | t: social_media: 'Tumblr' }}">
+        {%- render 'icon' with 'tumblr' -%}
+      </a>
+    </li>
+  {%- endif -%}
+
+{%- endcapture -%}
+
+{%- if social_media != blank -%}
+  <ul class="social-media social-media--{{ layout | default: 'list' }} unstyled-list" role="list">
+    {{- social_media -}}
+  </ul>
+{%- endif -%}

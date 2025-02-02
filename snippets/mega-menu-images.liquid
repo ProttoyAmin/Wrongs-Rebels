@@ -1,0 +1,53 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+MEGA MENU IMAGES COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+Render the images for a given mega-menu
+
+********************************************
+Supported variables
+********************************************
+
+* context: can be "menu" or "sidebar". This info slightly changes the alignment
+* block: the block containing all the information about the menu to render
+{%- endcomment -%}
+
+{%- for i in (1..2) -%}
+  {%- assign image_setting = 'image_' | append: i -%}
+  {%- assign heading_setting = 'image_' | append: i | append: '_heading' -%}
+  {%- assign text_setting = 'image_' | append: i | append: '_text' -%}
+  {%- assign link_setting = 'image_' | append: i | append: '_link' -%}
+
+  {%- capture image_content -%}
+    {%- if block.settings[image_setting] -%}
+      <div class="overflow-hidden">
+        {{- block.settings[image_setting] | image_url: width: block.settings[image_setting].width | image_tag: loading: 'lazy', sizes: '315px', widths: '315,630,945', class: 'zoom-image group-hover:zoom' -}}
+      </div>
+    {%- endif -%}
+
+    {%- if block.settings[heading_setting] != blank or block.settings[text_setting] != blank -%}
+      <div class="v-stack text-center {% if context == 'menu' %}gap-2.5{% else %}gap-0.5{% endif %}">
+        {%- if block.settings[heading_setting] != blank -%}
+          <p class="h6">{{ block.settings[heading_setting] }}</p>
+        {%- endif -%}
+
+        {%- if block.settings[text_setting] != blank -%}
+          <p class="smallcaps text-xs text-subdued">{{ block.settings[text_setting] }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endcapture -%}
+
+  {%- if image_content != blank -%}
+    {%- if block.settings[link_setting] != blank -%}
+      <a href="{{ block.settings[link_setting] }}" class="v-stack justify-items-center gap-4 sm:gap-5 group">
+        {{- image_content -}}
+      </a>
+    {%- else -%}
+      <div class="v-stack justify-items-center gap-4 sm:gap-5 group">
+        {{- image_content -}}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}

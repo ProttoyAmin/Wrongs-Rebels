@@ -1,0 +1,254 @@
+<style>
+.browse-products{
+      font-family: Inter;
+      font-weight: bold;
+      font-size: 10px;
+      background-color: black; /* Background for the text */
+      color: white; /* Text color */
+      padding: 6px 30px;
+      border: none; /* Remove border */
+      display: inline-block; /* Shrink-wrap the button to its text content */
+      width: auto; /* Ensure the width matches the content */
+      text-align: center; /* Align the text inside the button */
+      cursor: pointer; /* Pointer cursor */
+  
+</style>
+
+
+<cart-drawer
+  id="cart-drawer"
+  class="cart-drawer drawer {% if cart.empty? %}drawer--center-body{% endif %} color-scheme color-scheme--{{ section.settings.color_scheme.id }}"
+  initial-focus="false"
+  handle-editor-events
+>
+  <p class="h4" slot="header"> Your {{ 'cart.general.title' | t }} <sup class="h6"> ({{ cart.item_count }}) </sup></p>
+
+  {%- if cart.empty? -%}
+    <div style="text-align: center;">
+      <p class="h5 text-center">{{ 'cart.general.empty' | t }}</p>
+      <a class="browse-products" href="{{ section.settings.button_link }}">GO SHOPPING </a>
+    </div>
+  {%- else -%}
+    <div class="cart-drawer__items">
+      {%- for line_item in cart.items -%}
+        {%- render 'line-item', line_item: line_item, show_quantity_selector: true -%}
+      {%- endfor -%}
+    </div>
+
+    {%- liquid
+      assign cross_sell_products_count = 0
+
+      for product in section.settings.cross_sell_products
+        assign products_in_cart = cart.items | where: 'product_id', product.id
+
+        if products_in_cart.size == 0 and product.available
+          assign cross_sell_products_count = cross_sell_products_count | plus: 1
+        endif
+      endfor
+    -%}
+
+    {%- if cross_sell_products_count > 0 -%}
+      <div class="cart-drawer__complementary-products complementary-products">
+        {%- assign carousel_id = 'complementary-products-carousel-' | append: section.id -%}
+
+        {%- if section.settings.cross_sell_title != blank
+          or section.settings.cross_sell_stack_products == false
+          and cross_sell_products_count > 1
+        -%}
+          <div class="complementary-products__header complementary-products__header--align-start">
+            <p class="h6">{{ section.settings.cross_sell_title }}</p>
+
+            {%- if section.settings.cross_sell_stack_products == false and cross_sell_products_count > 1 -%}
+              <carousel-navigation aria-controls="{{ carousel_id }}" class="page-dots page-dots--narrow">
+                {%- for i in (1..cross_sell_products_count) -%}
+                  <button class="relative" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+                    <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: forloop.index }}</span>
+                  </button>
+                {%- endfor -%}
+              </carousel-navigation>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- liquid
+          capture complementary_products
+            for product in section.settings.cross_sell_products
+              assign products_in_cart = cart.items | where: 'product_id', product.id
+
+              if products_in_cart.size == 0 and product.available
+                render 'product-card-horizontal', product: product, show_quick_buy: true
+              endif
+            endfor
+          endcapture
+        -%}
+
+        {%- if section.settings.cross_sell_stack_products -%}
+          <div class="complementary-products__product-list">
+            {{- complementary_products -}}
+          </div>
+        {%- else -%}
+          <scroll-carousel
+            id="{{ carousel_id }}"
+            class="complementary-products__product-list complementary-products__product-list--carousel scroll-area bleed snap-x"
+          >
+            {{- complementary_products -}}
+          </scroll-carousel>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <form action="{{ routes.cart_url }}" method="POST" class="cart-drawer__footer" slot="footer">
+      <input type="hidden" name="attributes[products_mobile_grid_mode]" value="">
+      <input type="hidden" name="attributes[products_desktop_grid_mode]" value="">
+
+      {%- if section.settings.show_cart_note or section.settings.show_shipping_text -%}
+        <div class="v-stack gap-0.5 justify-items-start">
+          {%- if section.settings.show_cart_note -%}
+            {%- assign cart_note_dialog_id = 'cart-note-' | append: section.id -%}
+            <button class="link-faded-reverse" aria-controls="{{ cart_note_dialog_id }}">
+              {{ 'cart.general.add_order_note' | t }}
+            </button>
+
+            <cart-note-dialog id="{{ cart_note_dialog_id }}" class="cart-drawer__order-note">
+              <div class="form">
+                <cart-note class="form-control">
+                  {%- assign order_note = 'cart.general.order_note' | t -%}
+                  {%- assign placeholder = 'cart.general.note_placeholder' | t -%}
+                  {%- render 'input',
+                    name: 'note',
+                    multiline: 3,
+                    label: order_note,
+                    value: cart.note,
+                    placeholder: placeholder,
+                    show_label_as_block: true
+                  -%}
+                </cart-note>
+
+                <dialog-close-button class="contents">
+                  <button type="button" class="button">{{ 'cart.general.save_note' | t }}</button>
+                </dialog-close-button>
+              </div>
+            </cart-note-dialog>
+          {%- endif -%}
+          {%- if settings.cart_show_free_shipping_bar -%}
+            {%- render 'free-shipping-bar' -%}
+          {%- endif -%}
+          {%- if section.settings.show_shipping_text -%}
+            <p class="text-subdued">{{ 'cart.general.taxes_and_shipping_at_checkout' | t }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {% for discount_application in cart.cart_level_discount_applications %}
+        <div class="h-stack justify-start gap-4">
+          <span class="discount-badge text-xs">
+            {%- render 'icon' with 'discount', width: 12 -%}
+            {{- discount_application.title -}}
+          </span>
+          <span class="text-subdued">-{{ discount_application.total_allocated_amount | money }}</span>
+        </div>
+      {% endfor %}
+
+      <div class="button-group">
+        {%- if section.settings.show_view_cart_button or section.settings.show_checkout_button == false -%}
+          {%- assign view_cart = 'cart.general.view_cart' | t -%}
+          {%- render 'button', href: routes.cart_url, content: view_cart, stretch: true -%}
+        {%- endif -%}
+
+        {%- if section.settings.show_checkout_button -%}
+          {%- capture checkout_button -%}
+            {{- 'cart.general.checkout' | t -}}
+
+            {%- if section.settings.show_price_in_checkout_button -%}
+              <span class="cart-drawer__button-price">{{- cart.total_price | money -}}</span>
+            {%- endif -%}
+          {%- endcapture -%}
+
+          {%- render 'button', type: 'submit', content: checkout_button, name: 'checkout', stretch: true -%}
+        {%- endif -%}
+      </div>
+    </form>
+  {%- endif -%}
+</cart-drawer>
+
+{% schema %}
+{
+  "name": "t:sections.cart_drawer.name",
+  "class": "shopify-section--cart-drawer",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.cart_drawer.page_info"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.cart_drawer.free_shipping_bar_info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_note",
+      "label": "t:sections.cart_drawer.show_cart_note",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_text",
+      "label": "t:sections.cart_drawer.show_shipping_text",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_cart_button",
+      "label": "t:sections.cart_drawer.show_view_cart_button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_checkout_button",
+      "label": "t:sections.cart_drawer.show_checkout_button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_in_checkout_button",
+      "label": "t:sections.cart_drawer.show_price_in_checkout_button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cart_drawer.cross_sell_category"
+    },
+    {
+      "type": "product_list",
+      "id": "cross_sell_products",
+      "label": "t:sections.cart_drawer.cross_sell_products",
+      "info": "t:sections.cart_drawer.cross_sell_products_info",
+      "limit": 5
+    },
+    {
+      "type": "inline_richtext",
+      "id": "cross_sell_title",
+      "label": "t:sections.cart_drawer.cross_sell_heading",
+      "default": "Complete with"
+    },
+    {
+      "type": "checkbox",
+      "id": "cross_sell_stack_products",
+      "label": "t:sections.cart_drawer.cross_sell_stack_products",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ]
+}
+{% endschema %}

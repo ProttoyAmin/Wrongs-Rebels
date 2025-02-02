@@ -1,0 +1,287 @@
+{%- comment -%}
+This countdown section is the main countdown section that can be added everywhere. For the condensed countdown section
+usable in the header group, please look at the "countdown-condensed.liquid" section instead.
+{%- endcomment -%}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    {%- if section.settings.image -%}
+      --content-over-media-content-max-width: 71.875rem;
+      --content-over-media-row-gap: var(--section-vertical-spacing);
+      --content-over-media-overlay: {{ section.settings.overlay_color.rgb }} / {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    {%- endif -%}
+
+    --countdown-timer-flip-background: {{ section.settings.flip_background.rgb }} / {{ section.settings.flip_background_opacity | divided_by: 100.0 }};
+    --countdown-timer-flip-text-color: {{ section.settings.flip_text_color.rgb }};
+  }
+</style>
+
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.image != blank %}color-scheme--with-image-overlay{% else %}section-spacing {% if section.settings.separate_section_with_border %}bordered-section{% endif %}{% endif %}">
+  {%- capture section_content -%}
+    <div class="countdown {% if section.settings.timer_position == 'start' %}countdown--reverse{% endif %}">
+      <div class="countdown__content prose">
+        {%- if section.settings.subheading != blank -%}
+          <p class="h6">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.title != blank -%}
+          <h2 class="h1">{{ section.settings.title }}</h2>
+        {%- endif -%}
+
+        {{- section.settings.content -}}
+
+        {%- if section.settings.button_text != blank -%}
+          {%- render 'button', href: section.settings.button_link, content: section.settings.button_text -%}
+        {%- endif -%}
+      </div>
+
+      {%- assign accessibility_expiration_date = section.settings.expiration_date | date: format: 'date_at_time' -%}
+      {%- assign accessibility_text = 'sections.countdown_timer.expires_accessibility_text' | t: expiration_date: accessibility_expiration_date -%}
+
+      {%- if section.settings.flip_background != blank and section.settings.flip_background != 'rgba(0,0,0,0)' -%}
+        {%- assign has_flip_background = true -%}
+      {%- endif -%}
+
+      <countdown-timer class="countdown__timer" role="timer" aria-label="{{ accessibility_text | escape }}" expires-at="{{ section.settings.expiration_date | date: '%FT%T%:z' | escape }}" expiration-behavior="{{ section.settings.expiration_behavior }}">
+        <div class="countdown__timer-item" aria-hidden="true">
+          <countdown-timer-flip type="days" {% if section.settings.animate_number %}animate{% endif %} class="countdown__timer-flip {% if has_flip_background %}countdown__timer-flip--background{% endif %} h1">00</countdown-timer-flip>
+          <span class="countdown__timer-unit h6">{{ 'sections.countdown_timer.days_long' | t }}</span>
+        </div>
+
+        <span class="countdown__timer-item-separator" aria-hidden="true">:</span>
+
+        <div class="countdown__timer-item" aria-hidden="true">
+          <countdown-timer-flip type="hours" {% if section.settings.animate_number %}animate{% endif %} class="countdown__timer-flip {% if has_flip_background %}countdown__timer-flip--background{% endif %} h1">00</countdown-timer-flip>
+          <span class="countdown__timer-unit h6">{{ 'sections.countdown_timer.hours_long' | t }}</span>
+        </div>
+
+        <span class="countdown__timer-item-separator" aria-hidden="true">:</span>
+
+        <div class="countdown__timer-item" aria-hidden="true">
+          <countdown-timer-flip type="minutes" {% if section.settings.animate_number %}animate{% endif %} class="countdown__timer-flip {% if has_flip_background %}countdown__timer-flip--background{% endif %} h1">00</countdown-timer-flip>
+          <span class="countdown__timer-unit h6">{{ 'sections.countdown_timer.minutes_long' | t }}</span>
+        </div>
+
+        <span class="countdown__timer-item-separator" aria-hidden="true">:</span>
+
+        <div class="countdown__timer-item" aria-hidden="true">
+          <countdown-timer-flip type="seconds" {% if section.settings.animate_number %}animate{% endif %} class="countdown__timer-flip {% if has_flip_background %}countdown__timer-flip--background{% endif %} h1">00</countdown-timer-flip>
+          <span class="countdown__timer-unit h6">{{ 'sections.countdown_timer.seconds_long' | t }}</span>
+        </div>
+      </countdown-timer>
+    </div>
+  {%- endcapture -%}
+
+  {%- if section.settings.image -%}
+    <div class="content-over-media content-over-media--{{ section.settings.image_size }}">
+      <picture>
+        {%- if section.settings.mobile_image != blank -%}
+          <source
+              media="(max-width: 699px)"
+              srcset="{{ section.settings.mobile_image | image_url: width: '400x' }} 400w, {{ section.settings.mobile_image | image_url: width: '600x' }} 600w, {{ section.settings.mobile_image | image_url: width: '800x' }} 800w, {{ section.settings.mobile_image | image_url: width: '1000x' }} 1000w"
+              width="{{ section.settings.mobile_image.width }}"
+              height="{{ section.settings.mobile_image.height }}"
+          >
+        {%- endif -%}
+
+        {{- section.settings.image | image_url: width: section.settings.image.width | image_tag: widths: '400,500,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000' -}}
+      </picture>
+
+      {{- section_content -}}
+    </div>
+  {%- else -%}
+    <div class="container container--md">
+      {{- section_content -}}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.countdown_timer.name",
+  "class": "shopify-section--countdown",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:global.image.image",
+      "info": "t:sections.countdown_timer.image_recommendation"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "t:global.image.mobile_image",
+      "info": "t:sections.countdown_timer.mobile_image_recommendation"
+    },
+    {
+      "type": "select",
+      "id": "image_size",
+      "label": "t:global.image.size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:global.sizes.original_image_ratio"
+        },
+        {
+          "value": "xs",
+          "label": "t:global.sizes.x_small"
+        },
+        {
+          "value": "sm",
+          "label": "t:global.sizes.small"
+        },
+        {
+          "value": "md",
+          "label": "t:global.sizes.medium"
+        },
+        {
+          "value": "lg",
+          "label": "t:global.sizes.large"
+        }
+      ],
+      "info": "t:global.image.ratio_avoid_cropping_info",
+      "default": "auto"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading",
+      "default": "Subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "Special offer"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:global.text.content",
+      "default": "<p>Share something about your limited offer or temporary promotion.</p>"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:global.text.button_link"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:global.text.button_text"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.countdown_timer.timer_category",
+      "info": "t:sections.countdown_timer.timezone_information"
+    },
+    {
+      "type": "text",
+      "id": "expiration_date",
+      "label": "t:sections.countdown_timer.expiration_date",
+      "placeholder": "Eg. 2025-12-25 12:00",
+      "info": "t:sections.countdown_timer.expiration_date_info"
+    },
+    {
+      "type": "select",
+      "id": "expiration_behavior",
+      "label": "t:sections.countdown_timer.expiration_behavior",
+      "options": [
+        {
+          "value": "hide",
+          "label": "t:sections.countdown_timer.expiration_behavior_options.hide"
+        },
+        {
+          "value": "leave",
+          "label": "t:sections.countdown_timer.expiration_behavior_options.leave"
+        }
+      ],
+      "default": "leave"
+    },
+    {
+      "type": "select",
+      "id": "timer_position",
+      "label": "t:sections.countdown_timer.timer_position",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:global.position.left"
+        },
+        {
+          "value": "end",
+          "label": "t:global.position.right"
+        }
+      ],
+      "default": "end"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_number",
+      "label": "t:sections.countdown_timer.animate_number",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:global.colors.category"
+    },
+    {
+      "type": "color",
+      "id": "flip_background",
+      "label": "t:sections.countdown_timer.flip_background"
+    },
+    {
+      "type": "range",
+      "id": "flip_background_opacity",
+      "min": 0,
+      "max": 100,
+      "unit": "%",
+      "label": "t:sections.countdown_timer.flip_background_opacity",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "flip_text_color",
+      "label": "t:sections.countdown_timer.flip_text_color"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:global.colors.overlay_color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:global.colors.overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.countdown_timer.presets.countdown_timer.name"
+    }
+  ]
+}
+{% endschema %}

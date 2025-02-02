@@ -1,0 +1,57 @@
+<privacy-banner class="pop-in privacy-banner color-scheme color-scheme--{{ section.settings.color_scheme.id }}" handle-editor-events>
+  <dialog-close-button class="contents">
+    <button class="pop-in__close-button tap-area">
+      <span class="sr-only">{{ 'general.accessibility.close' | t }}</span>
+      {%- render 'icon' with 'close' -%}
+    </button>
+  </dialog-close-button>
+
+  <div class="v-stack gap-4">
+    {%- if section.settings.title != blank -%}
+      <p class="h6">{{ section.settings.title }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.content != blank -%}
+      <div class="prose text-xs">
+        {{- section.settings.content -}}
+      </div>
+    {%- endif -%}
+
+    <div class="h-stack gap-4">
+      <button type="button" class="link text-xs" data-action="accept">{{ 'general.privacy_banner.accept' | t }}</button>
+      <button type="button" class="link text-xs text-subdued" data-action="decline">{{ 'general.privacy_banner.decline' | t }}</button>
+    </div>
+  </div>
+</privacy-banner>
+
+{% schema %}
+{
+  "name": "t:sections.privacy_banner.name",
+  "class": "shopify-section--privacy-banner",
+  "tag": "aside",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.privacy_banner.show_privacy_banner_info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "🍪 Cookie policy"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:global.text.content",
+      "default": "<p>We use cookies and similar technologies to provide the best experience on our website. Refer to our Privacy Policy for more information.</p>"
+    }
+  ]
+}
+{% endschema %}

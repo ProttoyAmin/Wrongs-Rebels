@@ -1,0 +1,34 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+SECTION HEADER
+----------------------------------------------------------------------------------------------------------------------
+
+This component renders a section header, which is a pattern in many sections of the theme.
+
+********************************************
+Supported variables
+********************************************
+
+* subheading: the subheading (if any)
+* heading: the heading to show
+* content: an optional content to show
+* text_alignment: alignment of header's text (supports "start", "center" or "end") - default to being centered
+{%- endcomment -%}
+
+{% if subheading != blank or heading != blank or content != blank %}
+  <div class="section-header justify-self-{{ text_alignment | default: 'center' }} text-{{ text_alignment | default: 'center' }}">
+    {%- if subheading != blank or heading != blank or content != blank -%}
+      <div class="prose">
+        {%- if subheading != blank -%}
+          <p class="h6">{{- subheading -}}</p>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <h2 class="h2">{{- heading -}}</h2>
+        {%- endif -%}
+
+        {{- content -}}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

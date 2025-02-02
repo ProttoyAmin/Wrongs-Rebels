@@ -1,0 +1,73 @@
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+  <div class="container container--lg">
+    <div class="section-stack">
+      {%- render 'section-header', subheading: section.settings.subheading, heading: section.settings.title -%}
+
+      <div class="prev-next-blog-posts">
+        {%- capture sizes -%}(max-width: 699px) 95vw, 500px{%- endcapture -%}
+
+        {%- if blog.previous_article -%}
+          {%- render 'blog-post-card', article: blog.previous_article, blog: blog, show_category: section.settings.show_category, show_excerpt: section.settings.show_excerpt, show_read_more: section.settings.show_read_more, sizes: sizes -%}
+        {%- endif -%}
+
+        {%- if blog.next_article -%}
+          {%- render 'blog-post-card', article: blog.next_article, blog: blog, show_category: section.settings.show_category, show_excerpt: section.settings.show_excerpt, show_read_more: section.settings.show_read_more, sizes: sizes -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "t:sections.prev_next_blog_posts.name",
+    "class": "shopify-section--prev-next-blog-posts",
+    "tag": "section",
+    "settings": [
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:global.colors.scheme",
+        "default": "scheme-3"
+      },
+      {
+        "type": "checkbox",
+        "id": "separate_section_with_border",
+        "label": "t:global.section.separate_section_with_border",
+        "default": false
+      },
+      {
+        "type": "inline_richtext",
+        "id": "subheading",
+        "label": "t:global.text.subheading"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "title",
+        "label": "t:global.text.title",
+        "default": "Read more"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_category",
+        "label": "t:global.blog.show_category",
+        "info": "t:global.blog.show_category_info",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_excerpt",
+        "label": "t:global.blog.show_excerpt",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_read_more",
+        "label": "t:global.blog.show_read_more",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}

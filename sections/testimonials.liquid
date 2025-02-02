@@ -1,0 +1,243 @@
+{%- if section.blocks.size > 0 -%}
+  {%- comment -%}
+  ------------------------------------------------------------------------------------------------------------------------
+  CSS
+  ------------------------------------------------------------------------------------------------------------------------
+  {%- endcomment -%}
+
+  <style>
+    #shopify-section-{{ section.id }} {
+      --testimonials-font-size: calc(clamp(1.125rem, 1.064516129032258rem + 0.25806451612903225vw, 1.25rem) * {{ section.settings.font_size_factor }});
+    }
+  </style>
+
+  {%- comment -%}
+  ------------------------------------------------------------------------------------------------------------------------
+  LIQUID
+  ------------------------------------------------------------------------------------------------------------------------
+  {%- endcomment -%}
+
+  {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+  <div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}" style="{% render 'surface', background: section.settings.background, text_color: section.settings.text_color %}">
+    <div class="container">
+      <div class="section-stack">
+        {%- if section.settings.title != blank or section.settings.subheading != blank or section.settings.content != blank -%}
+          {%- render 'section-header', subheading: section.settings.subheading, heading: section.settings.title, content: section.settings.content, text_alignment: 'center' -%}
+        {%- endif -%}
+
+        <div class="testimonial-list">
+          {%- assign carousel_id = 'carousel-' | append: section.id -%}
+
+          <testimonial-carousel allow-swipe {% if section.settings.auto_rotate_between_testimonials %}autoplay="{{ section.settings.cycle_speed }}"{% endif %} class="testimonial-carousel" id="{{ carousel_id }}">
+            {%- assign testimonials_with_image = section.blocks | map: 'settings' | where: 'image' -%}
+
+            {%- for block in section.blocks -%}
+              <div class="testimonial-item text-center {% if forloop.first %}is-selected{% endif %}" {{ block.shopify_attributes }}>
+                {%- if block.settings.content != blank -%}
+                  <div class="prose">
+                    {{- block.settings.content -}}
+                  </div>
+                {%- endif -%}
+
+                {%- if block.settings.image != blank or block.settings.author != blank -%}
+                  <div class="v-stack justify-items-center gap-4 {% if testimonials_with_image.size > 0 %}md:hidden{% endif %}">
+                    {%- if block.settings.image != blank -%}
+                      {%- assign mobile_width = block.settings.image.width | at_most: block.settings.logo_mobile_max_width -%}
+                      {%- assign desktop_width = block.settings.image.width | at_most: block.settings.logo_max_width -%}
+
+                      {%- capture widths -%}{{ mobile_width }}, {{ mobile_width | times: 2 }}, {{ desktop_width }}, {{ desktop_width | times: 2 }}{%- endcapture -%}
+                      {%- capture sizes -%}(max-width: 699px) {{ mobile_width }}px, {{ desktop_width }}px{%- endcapture -%}
+                      {%- capture style_attribute -%}--image-mobile-max-width: {{ mobile_width }}px; --image-max-width: {{ desktop_width }}px{%- endcapture -%}
+
+                      {{- block.settings.image | image_url: width: block.settings.image.width | image_tag: sizes: sizes, widths: widths, class: 'constrained-image md:hidden', style: style_attribute -}}
+                    {%- endif -%}
+
+                    {%- if block.settings.author != blank -%}
+                      <p class="text-base">{{- block.settings.author -}}</p>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </testimonial-carousel>
+
+          {%- if section.blocks.size > 1 -%}
+            <carousel-navigation aria-controls="{{ carousel_id }}" class="page-dots {% if testimonials_with_image.size > 0 %}md:hidden{% endif %}">
+              {%- for i in (1..section.blocks.size) -%}
+                <button class="tap-area" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="{{ 'general.accessibility.go_to_item' | t: index: forloop.index | escape }}">
+                  <span class="sr-only">{{- 'general.accessibility.go_to_item' | t: index: forloop.index -}}</span>
+                </button>
+              {%- endfor -%}
+            </carousel-navigation>
+          {%- endif -%}
+
+          {%- if testimonials_with_image.size > 0 -%}
+            <carousel-navigation aria-controls="{{ carousel_id }}" class="testimonial-list__thumbnail-scroller hidden md:flex">
+              {%- for block in section.blocks -%}
+                <button class="testimonial-list__thumbnail" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" {% if block.settings.author == blank %}aria-label="{{ 'general.accessibility.go_to_item' | t: index: forloop.index | escape }}"{% endif %} {{ block.shopify_attributes }}>
+                  <div class="v-stack justify-items-center gap-4">
+                    {%- if block.settings.image -%}
+                      {%- assign desktop_width = block.settings.image.width | at_most: block.settings.logo_max_width -%}
+
+                      {%- capture widths -%}{{ desktop_width }}, {{ desktop_width | times: 2 }}{%- endcapture -%}
+                      {%- capture sizes -%}{{ desktop_width }}px{%- endcapture -%}
+                      {%- capture style_attribute -%}--image-max-width: {{ desktop_width }}px{%- endcapture -%}
+
+                      {{- block.settings.image | image_url: width: block.settings.image.width | image_tag: sizes: sizes, widths: widths, style: style_attribute -}}
+                    {%- else -%}
+                      {{- 'image' | placeholder_svg_tag: 'placeholder' -}}
+                    {%- endif -%}
+
+                    {%- if block.settings.author != blank -%}
+                      <p class="text-base">{{- block.settings.author -}}</p>
+                    {%- endif -%}
+                  </div>
+                </button>
+              {%- endfor -%}
+            </carousel-navigation>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.testimonials.name",
+  "class": "shopify-section--testimonials",
+  "tag": "section",
+  "max_blocks": 5,
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_rotate_between_testimonials",
+      "label": "t:sections.testimonials.auto_rotate_between_testimonials"
+    },
+    {
+      "type": "range",
+      "id": "cycle_speed",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "unit": "sec",
+      "label": "t:sections.testimonials.cycle_speed",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "font_size_factor",
+      "min": 0.5,
+      "max": 1.5,
+      "label": "t:global.text.font_size_factor",
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "t:global.section.header_category"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:global.text.content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "t:sections.testimonials.blocks.testimonial.name",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:global.text.content",
+          "default": "<p>Share what your customers are saying about your products, customer service or shipping rates.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.testimonials.blocks.testimonial.avatar",
+          "info": "t:sections.testimonials.blocks.testimonial.avatar_size_recommendation"
+        },
+        {
+          "type": "range",
+          "id": "logo_max_width",
+          "min": 50,
+          "max": 300,
+          "step": 5,
+          "unit": "px",
+          "label": "t:global.image.width",
+          "default": 140
+        },
+        {
+          "type": "range",
+          "id": "logo_mobile_max_width",
+          "min": 50,
+          "max": 170,
+          "step": 5,
+          "unit": "px",
+          "label": "t:global.image.mobile_width",
+          "default": 100
+        },
+        {
+          "type": "inline_richtext",
+          "id": "author",
+          "label": "t:sections.testimonials.blocks.testimonial.author"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.testimonials.presets.testimonials.name",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "content": "<p>Share what your customers are saying about your products, customer service or shipping rates.</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "content": "<p>Share what your customers are saying about your products, customer service or shipping rates.</p>"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "content": "<p>Share what your customers are saying about your products, customer service or shipping rates.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

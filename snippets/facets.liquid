@@ -1,0 +1,138 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+FACETING
+----------------------------------------------------------------------------------------------------------------------
+
+Display the facets for a given resource.
+
+********************************************
+Supported variables
+********************************************
+
+* results: either collection or search drop to extract the filters from
+* show_filters: a boolean indicating if the filters should show or not (this is useful if merchants want only to show
+                the quick links without filters, for instance)
+* open_filters_by_default: if set to true, all the collapsible filters are automatically open
+* update_on_change: if set to true the results will reload as soon as an option is changed
+* quick_links_menu: an optional menu that will show fixed links
+* context: an optional context to generate unique ID if facets are outputted several times
+{%- endcomment -%}
+
+{%- assign color_label_list = 'general.label.color' | t | replace: ', ', ',' | downcase | split: ',' -%}
+{%- capture id_prefix -%}facets-{{ context }}{%- endcapture -%}
+
+<facets-form {% if update_on_change %}update-on-change{% endif %} section-id="{{ section.id }}">
+  <form method="GET" action="{{ request.path }}" class="facets">
+    {%- comment -%}We always reset to the first page so that when criteria change, the page is restored to the first one{%- endcomment -%}
+    <input type="hidden" name="page" value="">
+
+    {%- if results.current_type != blank or results.current_vendor != blank -%}
+      <input type="hidden" name="q" value="{{ results.current_vendor | default: results.current_type | escape }}">
+    {%- endif -%}
+
+    {%- if results.sort_by != blank -%}
+      <input type="hidden" name="sort_by" value="{{ results.sort_by }}">
+    {%- endif -%}
+
+    {%- if request.page_type == 'search' -%}
+      <input type="hidden" name="q" value="{{ results.terms | escape }}">
+    {%- endif -%}
+
+    <div class="accordion-list">
+      {%- if quick_links_menu.links.size > 0 -%}
+        {%- capture filter_content -%}
+          <div class="v-stack gap-2.5">
+            {%- for link in quick_links_menu.links -%}
+              <a href="{{ link.url }}" {% unless link.active %}class="link-faded"{% endunless %}>{{ link.title }}</a>
+            {%- endfor -%}
+          </div>
+        {%- endcapture -%}
+
+        {%- render 'accordion', title: quick_links_menu.title, content: filter_content, open: open_filters_by_default, show_arrow: true -%}
+      {%- endif -%}
+
+      {%- if show_filters -%}
+        {%- for filter in results.filters -%}
+          {%- capture filter_content -%}
+            {%- if filter.type == 'boolean' or filter.param_name == 'filter.v.availability' -%}
+              {%- if filter.param_name == 'filter.v.availability' -%}
+                <div class="checkbox-control">
+                  <input id="{{ id_prefix }}-{{ filter.param_name }}" type="checkbox" class="switch" name="{{ filter.param_name }}" value="1" {% if filter.active_values.size > 0 %}checked{% endif %}>
+                  <label for="{{ id_prefix }}-{{ filter.param_name }}" class="text-subdued">{{- 'collection.faceting.in_stock_only' | t -}}</label>
+                </div>
+              {%- else -%}
+                <div class="v-stack gap-2.5">
+                  {%- for filter_value in filter.values -%}
+                    {%- liquid
+                      if section.settings.show_filter_values_count
+                        assign label = filter_value.label | append: ' (' | append: filter_value.count | append: ')'
+                      else
+                        assign label = filter_value.label
+                      endif
+                    -%}
+
+                    <div class="checkbox-control">
+                      {%- capture boolean_index -%}{% increment filter_boolean %}{%- endcapture -%}
+
+                      <input id="{{ id_prefix }}-{{ filter_value.param_name }}-{{ boolean_index }}" type="checkbox" class="switch" name="{{ filter_value.param_name }}" value="{{ filter_value.value }}" {% if filter_value.active %}checked{% endif %}>
+                      <label for="{{ id_prefix }}-{{ filter_value.param_name }}-{{ boolean_index }}" class="text-subdued">{{ label }}</label>
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            {%- else -%}
+              {%- assign downcase_label = filter.label | downcase -%}
+
+              {%- case filter.type -%}
+                {%- when 'list' -%}
+                  {%- liquid
+                    if filter.presentation == 'image'
+                      assign wrapper_class_list = 'v-stack gap-2'
+                    elsif filter.presentation == 'swatch' or color_label_list contains downcase_label
+                      assign wrapper_class_list = 'h-stack wrap gap-2'
+                    else
+                      assign wrapper_class_list = 'v-stack gap-2.5'
+                    endif
+                  -%}
+
+                  <div class="{{ wrapper_class_list }}">
+                    {% liquid
+                      for filter_value in filter.values
+                        assign value_id_prefix = id_prefix | append: '-' | append: forloop.index
+
+                        if filter.presentation == 'image'
+                          render 'option-value', type: 'image_filter', filter_value: filter_value, id_prefix: value_id_prefix
+                        elsif filter.presentation == 'swatch' or color_label_list contains downcase_label
+                          render 'option-value', type: 'swatch', filter_value: filter_value, show_tooltip: true, id_prefix: value_id_prefix
+                        else
+                          if section.settings.show_filter_values_count
+                            assign label = filter_value.label | append: ' (' | append: filter_value.count | append: ')'
+                          else
+                            assign label = filter_value.label
+                          endif
+
+                          render 'checkbox', hide_checkbox: true, label: label, name: filter_value.param_name, value: filter_value.value, checked: filter_value.active, id_prefix: value_id_prefix
+                        endif
+                      endfor
+                    %}
+                  </div>
+
+                {%- when 'price_range' -%}
+                  {%- render 'price-range', filter: filter -%}
+              {%- endcase -%}
+            {%- endif -%}
+          {%- endcapture -%}
+
+          {%- if filter_content != blank -%}
+            {%- render 'accordion', title: filter.label, content: filter_content, open: open_filters_by_default, show_arrow: true -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    <noscript style="display: block; margin-top: 20px;">
+      {%- assign button_content = 'collection.faceting.apply_filters' | t -%}
+      {%- render 'button', content: button_content, stretch: true -%}
+    </noscript>
+  </form>
+</facets-form>

@@ -1,0 +1,40 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+SHIPPING ESTIMATOR COMPONENT
+---------------------------------------------------------------------------------------------------------------------
+
+This component creates a shipping estimator block.
+
+********************************************
+Supported parameters
+********************************************
+
+None
+{%- endcomment -%}
+
+<shipping-estimator class="shipping-estimator bordered-box">
+  <p class="bordered-box__title h4">{{ 'cart.shipping_estimator.estimate_shipping' | t }}</p>
+
+  <div class="v-stack gap-6">
+    <div class="shipping-estimator__form">
+      {%- liquid
+        assign country_label = 'cart.shipping_estimator.country' | t
+        assign province_label = 'cart.shipping_estimator.province' | t
+        assign zip_label = 'cart.shipping_estimator.zip' | t
+        assign estimate_button = 'cart.shipping_estimator.estimate' | t
+
+        assign default_country = customer.default_address.country | default: localization.country.name
+      -%}
+
+      <country-selector class="contents" country="{{ default_country | escape }}">
+        {%- render 'select', label: country_label, options: country_option_tags, name: 'address[country]' -%}
+        {%- render 'select', label: province_label, name: 'address[province]' -%}
+      </country-selector>
+
+      {%- render 'input', label: zip_label, name: 'address[zip]', autocapitalize: 'characters' -%}
+      {%- render 'button', type: 'button', content: estimate_button -%}
+    </div>
+
+    <span role="region" aria-live="polite" hidden><!-- Holder for results --></span>
+  </div>
+</shipping-estimator>

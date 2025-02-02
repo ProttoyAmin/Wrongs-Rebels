@@ -1,0 +1,48 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+PREDICTIVE SEARCH ITEM
+----------------------------------------------------------------------------------------------------------------------
+
+Renders a single result for the predictive search (this is abstracted as a snippet as this is rendered for both
+native predictive search and for the fallback search in Liquid, for languages that do not support predictive search)
+
+********************************************
+Supported variables
+********************************************
+
+* type: the object type. Can be "product", "query", "article", "collection" or "page"
+* product, query, article, collection, page: depending on the object type, the correspondin object is set
+{%- endcomment -%}
+
+{%- case type -%}
+  {%- when 'product' -%}
+    <div class="md-max:hidden">
+      {%- render 'product-card', product: product, show_quick_buy: false -%}
+    </div>
+
+    <div class="md:hidden">
+      {%- render 'product-card-horizontal', product: product, show_quick_buy: false -%}
+    </div>
+
+  {%- when 'query' -%}
+    <div>
+      <a href="{{ query.url }}" class="link-reverse" data-instant>{{ query.styled_text }}</a>
+    </div>
+
+  {%- when 'article' -%}
+    {%- render 'blog-post-card', article: article, show_excerpt: false, show_category: true, show_read_more: false, category_class: 'smallcaps', title_class: 'h6 sm:h5' -%}
+
+  {%- when 'collection' -%}
+    <a href="{{ collection.url }}" class="v-stack gap-3 sm:gap-5">
+      {%- if collection.image -%}
+        {{- collection.image | image_url: width: collection.image.width | image_tag: sizes: '(max-width: 699px) 160px, 500px', widths: '200,300,400,500,600,800,1000,1200,1400' -}}
+      {%- endif -%}
+
+      <span class="h6 sm:h5">{{ collection.title }}</span>
+    </a>
+
+  {%- when 'page' -%}
+    <div>
+      <a href="{{ page.url }}" class="link-reverse" data-instant>{{ page.title }}</a>
+    </div>
+{%- endcase -%}

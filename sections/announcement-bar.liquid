@@ -1,0 +1,138 @@
+{%- if section.blocks.size > 0 -%}
+  <style>
+    :root {
+      --announcement-bar-is-sticky: {% if section.settings.enable_sticky %}1{% else %}0{% endif %};
+
+      {%- if section.index == 1 and section.settings.enable_sticky == false -%}
+        --header-scroll-tracker-offset: var(--announcement-bar-height);
+      {%- endif -%}
+    }
+
+    {%- if section.settings.enable_sticky -%}
+      #shopify-section-{{ section.id }} {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+
+      .shopify-section--header ~ #shopify-section-{{ section.id }} {
+        top: calc(var(--header-is-sticky, 0) * var(--header-height, 0px));
+        z-index: 4; /* We have to lower the z-index in case the announcement bar is displayed after the header */
+      }
+    {%- endif -%}
+
+    #shopify-section-{{ section.id }} {
+      --announcement-bar-font-size: {{ section.settings.mobile_font_size | divided_by: 16.0 }}rem;
+    }
+
+    @media screen and (min-width: 999px) {
+      #shopify-section-{{ section.id }} {
+        --announcement-bar-font-size: {{ section.settings.desktop_font_size | divided_by: 16.0 }}rem;
+      }
+    }
+  </style>
+
+  <height-observer variable="announcement-bar">
+    <div class="announcement-bar color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+      {%- assign carousel_id = 'carousel-' | append: section.id -%}
+
+      {%- if section.blocks.size > 1 -%}
+        <carousel-prev-button aria-controls="{{ carousel_id }}" class="contents">
+          <button type="button" class="tap-area">
+            <span class="sr-only">{{ 'general.accessibility.previous' | t }}</span>
+            {%- render 'icon' with 'arrow-left', width: 12, direction_aware: true -%}
+          </button>
+        </carousel-prev-button>
+      {%- endif -%}
+
+      <announcement-bar-carousel allow-swipe {% if section.settings.autoplay %}autoplay="{{ section.settings.cycle_speed }}"{% endif %} id="{{ carousel_id }}" class="announcement-bar__carousel">
+        {%- for block in section.blocks -%}
+          <p class="prose heading {% if forloop.first %}is-selected{% endif %}" {{ block.shopify_attributes }}>{{- block.settings.text -}}</p>
+        {%- endfor -%}
+      </announcement-bar-carousel>
+
+      {%- if section.blocks.size > 1 -%}
+        <carousel-next-button aria-controls="{{ carousel_id }}" class="contents">
+          <button type="button" class="tap-area">
+            <span class="sr-only">{{ 'general.accessibility.next' | t }}</span>
+            {%- render 'icon' with 'arrow-right', width: 12, direction_aware: true -%}
+          </button>
+        </carousel-next-button>
+      {%- endif -%}
+    </div>
+  </height-observer>
+
+  <script>
+    document.documentElement.style.setProperty('--announcement-bar-height', `${document.getElementById('shopify-section-{{ section.id }}').clientHeight.toFixed(2)}px`);
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "class": "shopify-section--announcement-bar",
+  "tag": "aside",
+  "max_blocks": 5,
+  "blocks": [
+    {
+      "type": "message",
+      "name": "t:sections.announcement_bar.blocks.message.name",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "t:sections.announcement_bar.blocks.message.text",
+          "default": "Announce something here"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "t:sections.announcement_bar.enable_sticky_bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.announcement_bar.auto_rotate_between_messages",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "cycle_speed",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "sec",
+      "label": "t:sections.announcement_bar.cycle_speed",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "desktop_font_size",
+      "min": 9,
+      "max": 15,
+      "unit": "px",
+      "label": "t:sections.announcement_bar.desktop_text_size",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "min": 9,
+      "max": 15,
+      "unit": "px",
+      "label": "t:sections.announcement_bar.mobile_text_size",
+      "default": 10
+    }
+  ]
+}
+{% endschema %}

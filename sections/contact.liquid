@@ -1,0 +1,150 @@
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+  <div class="container container--xs">
+    <div class="section-stack text-center">
+      {%- render 'section-header', subheading: section.settings.subheading, heading: section.settings.title, content: section.settings.content, text_alignment: 'center' -%}
+
+      {%- form 'contact', class: 'form' -%}
+        {%- if form.posted_successfully? -%}
+          {%- assign content = 'contact.form.success_message' | t -%}
+          {%- render 'banner', status: 'success', content: content -%}
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          {%- capture content -%}{{ form.errors.translated_fields[form.errors.first] | capitalize }} {{ form.errors.messages[form.errors.first] }}{%- endcapture -%}
+          {%- render 'banner', status: 'error', content: content -%}
+        {%- endif -%}
+
+        <div class="fieldset">
+          <div class="fieldset-row">
+            {%- assign label  = 'contact.form.name' | t -%}
+            {%- render 'input', type: 'text', name: 'contact[name]', label: label, value: customer.name, required: true, autocomplete: 'name' -%}
+
+            {%- assign label  = 'contact.form.email' | t -%}
+            {%- render 'input', type: 'email', name: 'contact[email]', label: label, value: customer.email, required: true, autocomplete: 'email' -%}
+          </div>
+
+          {%- for block in section.blocks -%}
+            {%- assign field_title = block.settings.title -%}
+
+            {%- if field_title == blank -%}
+              {%- capture field_title -%}Custom field {% increment custom_field %}{%- endcapture -%}
+            {%- endif -%}
+
+            {%- capture name -%}contact[{{ field_title | escape }}]{%- endcapture -%}
+
+            {%- if block.type == 'text' -%}
+              {%- if block.settings.use_long_text -%}
+                {%- render 'input', name: name, label: block.settings.title, required: block.settings.required, multiline: 4 -%}
+              {%- else -%}
+                {%- render 'input', type: 'text', name: name, label: block.settings.title, required: block.settings.required -%}
+              {%- endif -%}
+            {%- elsif block.type == 'dropdown' and block.settings.values != blank -%}
+              {%- assign values = block.settings.values | split: ',' -%}
+              {%- render 'select', option_values: values, show_empty_value: true, name: name, label: block.settings.title, required: true -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- assign label = 'contact.form.message' | t -%}
+          {%- render 'input', name: 'contact[body]', label: label, multiline: 4, required: true -%}
+        </div>
+
+        {%- assign button_content = 'contact.form.submit' | t -%}
+        {%- render 'button', content: button_content, type: 'submit' -%}
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.contact.name",
+  "class": "shopify-section--contact",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "Contact"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:global.text.content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "t:sections.contact.blocks.text.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.contact.blocks.text.name_label",
+          "default": "Custom field"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_long_text",
+          "label": "t:sections.contact.blocks.text.use_long_text",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "required",
+          "label": "t:sections.contact.blocks.text.required",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "dropdown",
+      "name": "t:sections.contact.blocks.dropdown.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.contact.blocks.dropdown.name_label",
+          "default": "Custom field"
+        },
+        {
+          "type": "text",
+          "id": "values",
+          "label": "t:sections.contact.blocks.dropdown.values",
+          "info": "t:sections.contact.blocks.dropdown.values_info",
+          "default": "value 1, value 2, value 3"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.contact.presets.contact_form.name",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}

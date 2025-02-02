@@ -1,0 +1,146 @@
+{%- comment -%}
+This countdown section can only be added on the header group (as a condensed section). For the bigger countdown section
+usable in the main template, please look at the "countdown.liquid" section instead.
+{%- endcomment -%}
+
+<style>
+  @media screen and (min-width: 700px) {
+    #shopify-section-{{ section.id }} {
+      --countdown-condensed-justify-content: {{ section.settings.desktop_justification }};
+    }
+  }
+</style>
+
+<div class="countdown-condensed color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+  <div class="countdown-condensed__text">
+    {%- if section.settings.content != blank -%}
+      <div class="prose">
+        <p class="h6">{{- section.settings.content -}}</p>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.link_text != blank -%}
+      <a href="{{ section.settings.link_url }}" class="h6 link sm-max:hidden">{{ section.settings.link_text }}</a>
+    {%- endif -%}
+  </div>
+
+  {%- assign accessibility_expiration_date = section.settings.expiration_date | date: format: 'date_at_time' -%}
+  {%- assign accessibility_text = 'sections.countdown_timer.expires_accessibility_text' | t: expiration_date: accessibility_expiration_date -%}
+
+  <countdown-timer class="countdown-condensed__timer" role="timer" aria-label="{{ accessibility_text | escape }}" expires-at="{{ section.settings.expiration_date | date: '%FT%T%:z' | escape }}" expiration-behavior="{{ section.settings.expiration_behavior }}">
+    <div class="countdown-condensed__timer-item" aria-hidden="true">
+      <countdown-timer-flip type="days" class="countdown-condensed__timer-flip">00</countdown-timer-flip>
+      <span class="countdown-condensed__timer-unit">{{ 'sections.countdown_timer.days' | t }}</span>
+    </div>
+
+    <span class="countdown-condensed__timer-item-separator" aria-hidden="true">:</span>
+
+    <div class="countdown-condensed__timer-item" aria-hidden="true">
+      <countdown-timer-flip type="hours" class="countdown-condensed__timer-flip">00</countdown-timer-flip>
+      <span class="countdown-condensed__timer-unit">{{ 'sections.countdown_timer.hours' | t }}</span>
+    </div>
+
+    <span class="countdown-condensed__timer-item-separator" aria-hidden="true">:</span>
+
+    <div class="countdown-condensed__timer-item" aria-hidden="true">
+      <countdown-timer-flip type="minutes" class="countdown-condensed__timer-flip">00</countdown-timer-flip>
+      <span class="countdown-condensed__timer-unit">{{ 'sections.countdown_timer.minutes' | t }}</span>
+    </div>
+
+    <span class="countdown-condensed__timer-item-separator" aria-hidden="true">:</span>
+
+    <div class="countdown-condensed__timer-item" aria-hidden="true">
+      <countdown-timer-flip type="seconds" class="countdown-condensed__timer-flip">00</countdown-timer-flip>
+      <span class="countdown-condensed__timer-unit">{{ 'sections.countdown_timer.seconds' | t }}</span>
+    </div>
+  </countdown-timer>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.countdown_timer.name",
+  "class": "shopify-section--countdown-condensed",
+  "tag": "section",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.countdown_timer.timezone_information"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "content",
+      "label": "t:global.text.content",
+      "default": "Promote your current offer"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "t:global.text.link_text",
+      "info": "t:sections.countdown_timer.link_text_info"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "t:global.text.link_url"
+    },
+    {
+      "type": "text",
+      "id": "expiration_date",
+      "label": "t:sections.countdown_timer.expiration_date",
+      "placeholder": "Eg. 2025-12-25 12:00",
+      "info": "t:sections.countdown_timer.expiration_date_info"
+    },
+    {
+      "type": "select",
+      "id": "expiration_behavior",
+      "label": "t:sections.countdown_timer.expiration_behavior",
+      "options": [
+        {
+          "value": "hide",
+          "label": "t:sections.countdown_timer.expiration_behavior_options.hide"
+        },
+        {
+          "value": "leave",
+          "label": "t:sections.countdown_timer.expiration_behavior_options.leave"
+        }
+      ],
+      "default": "leave"
+    },
+    {
+      "type": "select",
+      "id": "desktop_justification",
+      "label": "t:sections.countdown_timer.desktop_justification",
+      "options": [
+        {
+          "value": "center",
+          "label": "t:sections.countdown_timer.desktop_justification_options.center"
+        },
+        {
+          "value": "space-between",
+          "label": "t:sections.countdown_timer.desktop_justification_options.space_between"
+        },
+        {
+          "value": "space-evenly",
+          "label": "t:sections.countdown_timer.desktop_justification_options.space_evenly"
+        }
+      ],
+      "default": "space-between"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.countdown_timer.presets.countdown_timer.name"
+    }
+  ]
+}
+{% endschema %}

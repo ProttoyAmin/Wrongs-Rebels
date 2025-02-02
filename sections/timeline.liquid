@@ -1,0 +1,222 @@
+{%- if section.blocks.size > 0 -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      --timeline-nav-mobile-background: {{ section.settings.item_color_scheme.settings.background.rgb }};
+      --timeline-nav-mobile-text-color: {{ section.settings.item_color_scheme.settings.text_color.rgb }};
+    }
+  </style>
+
+  {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+  <div class="section-spacing color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+    <div class="container container--md">
+      <div class="timeline">
+        {%- assign carousel_id = 'carousel-' | append: section.id -%}
+
+        <timeline-carousel id="{{ carousel_id }}" class="timeline__carousel full-bleed sm:unbleed">
+          {%- for block in section.blocks -%}
+            <div class="timeline__item color-scheme color-scheme--{{ section.settings.item_color_scheme.id }} {% if forloop.first %}is-selected{% endif %}" style="--timeline-item-mobile-text-color: {{ block.settings.mobile_text_color.rgb }}" {{ block.shopify_attributes }}>
+              <div class="timeline__item-image-wrapper">
+                {%- liquid
+                  assign loading_strategy = nil
+
+                  if section.index <= 3 and forloop.position <= 3
+                    assign loading_strategy = 'eager'
+                  endif
+                -%}
+
+                {%- if block.settings.image -%}
+                  <picture>
+                    {%- if block.settings.mobile_image -%}
+                      <source
+                          media="(max-width: 699px)"
+                          srcset="{{ block.settings.mobile_image | image_url: width: '400x' }} 400w, {{ block.settings.mobile_image | image_url: width: '600x' }} 600w, {{ block.settings.mobile_image | image_url: width: '800x' }} 800w, {{ block.settings.mobile_image | image_url: width: '1000x' }} 1000w"
+                          width="{{ block.settings.mobile_image.width }}"
+                          height="{{ block.settings.mobile_image.height }}"
+                      >
+                    {%- endif -%}
+
+                    {{- block.settings.image | image_url: width: block.settings.image.width | image_tag: loading: loading_strategy, sizes: 'min(50vw, 575px)', widths: '600,700,800,1000,1200,1400,1600,1800', class: 'image-cover' -}}
+                  </picture>
+                {%- else -%}
+                  {%- capture placeholder_image -%}lifestyle-{% cycle '1', '2' %}{%- endcapture -%}
+                  {{- placeholder_image | placeholder_svg_tag: 'placeholder placeholder--invert image-cover' -}}
+                {%- endif -%}
+              </div>
+
+              <div class="timeline__item-content" {% if forloop.first %}reveal-on-scroll="true"{% endif %}>
+                <div class="prose">
+                  {%- if block.settings.subheading != blank -%}
+                    <p class="h6">{{ block.settings.subheading }}</p>
+                  {%- endif -%}
+
+                  {%- if block.settings.title != blank -%}
+                    <p class="h2">{{ block.settings.title }}</p>
+                  {%- endif -%}
+
+                  {{- block.settings.content -}}
+
+                  {%- if block.settings.link_text != blank -%}
+                    {%- render 'button', href: block.settings.link_url, content: block.settings.link_text, style: block.settings.link_style -%}
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </timeline-carousel>
+
+        <carousel-navigation align-selected aria-controls="{{ carousel_id }}" class="timeline__nav hide-scrollbar bleed sm:unbleed">
+          {%- for block in section.blocks -%}
+            <button class="heading" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+              {{- block.settings.label | default: forloop.index -}}
+            </button>
+          {%- endfor -%}
+        </carousel-navigation>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.timeline.name",
+  "class": "shopify-section--timeline",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "item_color_scheme",
+      "label": "t:sections.timeline.item_color_scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.timeline.blocks.item.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:global.image.image",
+          "info": "t:sections.timeline.blocks.item.image_info"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "t:global.image.mobile_image",
+          "info": "t:sections.timeline.blocks.item.mobile_image_info"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "label",
+          "label": "t:sections.timeline.blocks.item.label",
+          "default": "2020"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "subheading",
+          "label": "t:global.text.subheading",
+          "default": "Subheading"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "t:global.text.heading",
+          "default": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:global.text.content",
+          "default": "<p>Use this text to share information about what happened to your brand at a specific time.</p>"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "t:global.text.button_text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:global.text.button_link"
+        },
+        {
+          "type": "select",
+          "id": "link_style",
+          "label": "t:global.text.link_style",
+          "options": [
+            {
+              "value": "outline",
+              "label": "t:global.text.link_style_options.outline"
+            },
+            {
+              "value": "solid",
+              "label": "t:global.text.link_style_options.solid"
+            },
+            {
+              "value": "link",
+              "label": "t:global.text.link_style_options.link"
+            }
+          ],
+          "default": "link"
+        },
+        {
+          "type": "header",
+          "content": "t:global.colors.category"
+        },
+        {
+          "type": "color",
+          "id": "mobile_text_color",
+          "label": "t:sections.timeline.blocks.item.mobile_text_color",
+          "default": "#ffffff"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.timeline.presets.timeline.name",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "label": "2000",
+            "title": "2000"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "label": "2010",
+            "title": "2010"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "label": "2020",
+            "title": "2020"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

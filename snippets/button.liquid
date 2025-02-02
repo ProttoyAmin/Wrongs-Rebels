@@ -1,0 +1,128 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+BUTTON COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+Generate a button (or link styled as a button). It supports wide range of attributes that can be used to customize
+the appearance and functionality of the button.
+
+********************************************
+Supported variables
+********************************************
+
+* content: the content of the button
+* href: an optional link to set. If href is provided, then an "a" tag is generated, otherwise a "button"
+* size: can be "sm". If none is set, the default "base" size is used.
+* background: an optional background color to use that override the default
+* text_color: an optional text color to use that override the default
+* style: "solid", "outline" or "link". If none is set "solid" is assumed
+* stretch: if passed to true, a full width button is generated
+* subdued: when using the "outline" mode, this reduced the importance of the button
+* type: when href is empty, can be either "button" or "submit" (default to button if none is set)
+* name: when the button is a real button, allow to set the name attribute that is submitted
+* icon: the name of an optional icon to render along the button
+* disabled: if set to true, the button is disabled
+* form: the form ID that this button is linked to
+* external: if set to true and that a href is passed, it opens into a new window
+* aria_controls: the ID of the element controlled
+* block: an optional block to output theme editor attributes
+{%- endcomment -%}
+
+{% liquid
+  capture class_attribute
+    if style == 'link'
+      echo 'link'
+    else
+      echo 'button'
+
+      if size != blank and size != 'base'
+        echo ' button-' | append: size
+      endif
+
+      if style == 'outline'
+        echo ' button--outline'
+      endif
+
+      if subdued
+        echo ' button--subdued'
+      endif
+
+      if stretch
+        echo ' w-full'
+      endif
+    endif
+  endcapture
+
+  capture style_attribute
+    if style != 'link'
+      if background != blank and background != 'rgba(0,0,0,0)'
+        echo '--button-background: ' | append: background.rgb | append: ';'
+        echo '--button-outline-color: ' | append: background.rgb | append: ';'
+      endif
+
+      if text_color != blank and text_color != 'rgba(0,0,0,0)'
+        echo '--button-text-color: ' | append: text_color.rgb | append: ';'
+      endif
+    endif
+  endcapture
+
+  capture attributes
+    if class_attribute != blank
+      echo ' class="' | append: class_attribute | append: '"'
+    endif
+
+    if style_attribute != blank
+      echo ' style="' | append: style_attribute | append: '"'
+    endif
+
+    if aria_controls
+      echo ' aria-controls="' | append: aria_controls | append: '"'
+    endif
+
+    if disabled
+      if href
+        echo ' role="link" aria-disabled="true"'
+      else
+        echo ' disabled'
+      endif
+    endif
+
+    if name
+      echo ' name="' | append: name | append: '"'
+    endif
+
+    if form
+      echo ' form="' | append: form | append: '"'
+    endif
+
+    if href
+      echo ' href="' | append: href | append: '"'
+    endif
+
+    if external and href != blank
+      echo ' target="_blank"'
+    endif
+  endcapture
+%}
+
+{%- capture button_content -%}
+  {% if icon != blank %}
+    <div class="text-with-icon">
+      {%- render 'icon' with icon -%}
+      {{- content -}}
+          <span class="arrow-icon">→</span>
+    </div>
+  {%- else -%}
+    {{- content -}}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if href != blank -%}
+  <a {{ attributes }} {{ block.shopify_attributes }}>
+    {{- button_content -}}
+  </a>
+{%- else -%}
+  <button type="{{ type | default: 'button' }}" {{ attributes }} {{ block.shopify_attributes }}>
+    {{- button_content -}}
+  </button>
+{%- endif -%}

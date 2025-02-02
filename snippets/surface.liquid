@@ -1,0 +1,42 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+SURFACE COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+This snippet allows to create a dynamic surface coming from manual colors. This should only be used for overriding a
+color scheme.
+
+If you need to set a new color context coming from a color scheme, you should instead add the following classes to an
+item: "color-scheme color-scheme--{{ color_scheme.id }}"
+
+********************************************
+Supported variables
+********************************************
+
+* background_gradient: an optional gradient for the section
+* background: a background to use
+* background_opacity: an optional opacity to apply on the background (the opacity must be between 0 and 100)
+* text_color: a text color to use
+* border_color: a border color to set
+{%- endcomment -%}
+
+{%- if background_gradient != blank -%}
+  --background-gradient: {{ background_gradient }}; background-image: var(--background-gradient);
+{%- elsif background != blank and background != 'rgba(0,0,0,0)' -%}
+  --background: {{ background.rgb }} {% if background_opacity < 100 %}/ {{ background_opacity | divided_by: 100.0 }}{% endif %}; background-color: rgb(var(--background));
+{%- endif -%}
+
+{%- unless text_color == blank or text_color == 'rgba(0,0,0,0)' -%}
+  --text-color: {{ text_color.rgb }}; color: rgb(var(--text-color));
+{%- endunless -%}
+
+{%- if border_color != blank and border_color != 'rgba(0,0,0,0)' -%}
+  --border-color: {{ border_color.rgb }};
+{%- elsif background_gradient == blank and background != blank and background != 'rgba(0,0,0,0)' and text_color != blank -%}
+  {%- comment -%}If we have both colors, we can calculate an optimized color{%- endcomment -%}
+  {%- assign calculated_border_color = text_color | color_mix: background, 15 -%}
+  --border-color: {{- calculated_border_color.rgb -}};
+{%- else -%}
+  {%- comment -%}We cannot calculate an accurate border, so we do an opacity based approach {%- endcomment -%}
+  --border-color: var(--text-color) / 0.15;
+{%- endif -%}

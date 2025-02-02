@@ -1,0 +1,72 @@
+{%- comment -%}
+----------------------------------------------------------------------------------------------------------------------
+PAGINATION COMPONENT
+----------------------------------------------------------------------------------------------------------------------
+
+Create a pagination from the pagination object. To be use, this snippet must be included between a "paginate"/"endpaginate"
+block
+
+********************************************
+Supported variables
+********************************************
+
+* paginate: the paginate object to use (required)
+* facet: if set to true, it adds a "facet-link" custom elements to allow live reload of faceting search
+* hash: a hash string that is appended to generated URL
+{%- endcomment -%}
+
+{%- if paginate.pages > 1 -%}
+  <nav class="pagination" role="navigation" aria-label="{{ 'general.accessibility.pagination' | t }}">
+    {%- if paginate.previous.is_link -%}
+      {%- assign previous_page = paginate.current_page | minus: 1 -%}
+
+      {%- capture link -%}
+        <a class="pagination__link h6" rel="prev" aria-label="{{ 'general.accessibility.go_to_page' | t: index: previous_page }}" href="{{ paginate.previous.url }}{{ hash }}">
+          {%- render 'icon' with 'chevron-left', width: 11, direction_aware: true -%}
+        </a>
+      {%- endcapture -%}
+
+      {%- if facet -%}
+        <facet-link class="contents">{{- link -}}</facet-link>
+      {%- else -%}
+        {{- link -}}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}
+        {%- capture link -%}
+          <a class="pagination__link h6" aria-label="{{ 'general.accessibility.go_to_page' | t: index: part.title }}" href="{{ part.url }}{{ hash }}">
+            {{- part.title -}}
+          </a>
+        {%- endcapture -%}
+
+        {%- if facet -%}
+          <facet-link class="contents">{{- link -}}</facet-link>
+        {%- else -%}
+          {{- link -}}
+        {%- endif -%}
+      {%- else -%}
+        <span class="pagination__link pagination__link--disabled h6" {% if part.title == paginate.current_page %}aria-current="page"{% endif %}>
+          {{- part.title -}}
+        </span>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if paginate.next.is_link -%}
+      {%- assign next_page = paginate.current_page | plus: 1 -%}
+
+      {%- capture link -%}
+        <a class="pagination__link h6" rel="next" aria-label="{{ 'general.accessibility.go_to_page' | t: index: next_page }}" href="{{ paginate.next.url }}{{ hash }}">
+          {%- render 'icon' with 'chevron-right', width: 11, direction_aware: true -%}
+        </a>
+      {%- endcapture -%}
+
+      {%- if facet -%}
+        <facet-link class="contents">{{- link -}}</facet-link>
+      {%- else -%}
+        {{- link -}}
+      {%- endif -%}
+    {%- endif -%}
+  </nav>
+{%- endif -%}

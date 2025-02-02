@@ -1,0 +1,63 @@
+<script>
+  // This allows to expose several variables to the global scope, to be used in scripts
+  window.themeVariables = {
+    settings: {
+      showPageTransition: {{ settings.show_page_transition | json }},
+      pageType: {{ request.page_type | json }},
+      moneyFormat: {{ shop.money_format | json }},
+      moneyWithCurrencyFormat: {{ shop.money_with_currency_format | json }},
+      currencyCodeEnabled: {{ settings.currency_code_enabled | json }},
+      cartType: {{ settings.cart_type | json }},
+      staggerMenuApparition: {{ settings.stagger_menu_apparition | json }}
+    },
+
+    strings: {
+      addedToCart: {{ 'product.general.added_to_cart' | t | json }},
+      closeGallery: {{ 'product.gallery.close' | t | json }},
+      zoomGallery: {{ 'product.gallery.zoom' | t | json }},
+      errorGallery: {{ 'product.gallery.error' | t | json }},
+      shippingEstimatorNoResults: {{ 'cart.shipping_estimator.no_results' | t | json }},
+      shippingEstimatorOneResult: {{ 'cart.shipping_estimator.one_result' | t | json }},
+      shippingEstimatorMultipleResults: {{ 'cart.shipping_estimator.multiple_results' | t | json }},
+      shippingEstimatorError: {{ 'cart.shipping_estimator.error' | t | json }},
+      next: {{ 'general.accessibility.next' | t | json }},
+      previous: {{ 'general.accessibility.previous' | t | json }}
+    },
+
+    mediaQueries: {
+      'sm': 'screen and (min-width: 700px)',
+      'md': 'screen and (min-width: 1000px)',
+      'lg': 'screen and (min-width: 1150px)',
+      'xl': 'screen and (min-width: 1400px)',
+      '2xl': 'screen and (min-width: 1600px)',
+      'sm-max': 'screen and (max-width: 699px)',
+      'md-max': 'screen and (max-width: 999px)',
+      'lg-max': 'screen and (max-width: 1149px)',
+      'xl-max': 'screen and (max-width: 1399px)',
+      '2xl-max': 'screen and (max-width: 1599px)',
+      'motion-safe': '(prefers-reduced-motion: no-preference)',
+      'motion-reduce': '(prefers-reduced-motion: reduce)',
+      'supports-hover': 'screen and (pointer: fine)',
+      'supports-touch': 'screen and (hover: none)'
+    }
+  };
+
+  {%- if request.page_type == 'captcha' -%}
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual'; // Prevent the browser to scroll on captcha page
+    }
+  {%- endif -%}
+
+  {%- if request.page_type == 'policy' -%}
+    document.addEventListener('DOMContentLoaded', () => {
+      // Normalize the appearance of policy pages
+      document.querySelector('.shopify-policy__title')?.classList.add('h2');
+      document.querySelector('.rte')?.classList.add('prose');
+    });
+  {%- elsif request.page_type == '' -%}
+    document.addEventListener('DOMContentLoaded', () => {
+      // Normalize the appearance of marketing confirmation pages
+      document.querySelector('.shopify-email-marketing-confirmation__container')?.classList.add('prose');
+    });
+  {%- endif -%}
+</script>
